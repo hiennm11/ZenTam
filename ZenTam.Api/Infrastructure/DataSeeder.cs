@@ -16,7 +16,7 @@ public static class DataSeeder
     {
         if (!db.Users.Any())
         {
-            TestUserId = Guid.NewGuid();
+            TestUserId = new Guid("3c7be808-02c1-4f24-85e1-26f0f2455675");
             db.Users.Add(new User
             {
                 Id       = TestUserId,
