@@ -25,22 +25,17 @@ public class RegexIntentParser : IIntentParser
     private static readonly Regex Year4       = new(@"(\d{4})",
         RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    public Task<ParsedIntent?> TryParseAsync(string text, int currentYear, CancellationToken ct = default)
+    public Task<List<ParsedIntent>?> TryParseAsync(string text, int currentYear, CancellationToken ct = default)
     {
-        string? actionCode = null;
-        foreach (var (code, pattern) in ActionPatterns)
-        {
-            if (pattern.IsMatch(text))
-            {
-                actionCode = code;
-                break;
-            }
-        }
+        var matchedCodes = ActionPatterns
+            .Where(ap => ap.Pattern.IsMatch(text))
+            .Select(ap => ap.ActionCode)
+            .ToList();
 
-        if (actionCode is null)
-            return Task.FromResult<ParsedIntent?>(null);
+        if (matchedCodes.Count == 0)
+            return Task.FromResult<List<ParsedIntent>?>(null);
 
-        int? targetYear = null;
+        int targetYear;
         if (YearNamNay.IsMatch(text))
         {
             targetYear = currentYear;
@@ -57,13 +52,14 @@ public class RegexIntentParser : IIntentParser
             else
             {
                 m = Year4.Match(text);
-                if (m.Success)
-                    targetYear = int.Parse(m.Groups[1].Value);
+                targetYear = m.Success ? int.Parse(m.Groups[1].Value) : currentYear;
             }
         }
 
-        targetYear ??= currentYear;
+        var result = matchedCodes
+            .Select(code => new ParsedIntent(code, targetYear, "REGEX"))
+            .ToList();
 
-        return Task.FromResult<ParsedIntent?>(new ParsedIntent(actionCode, targetYear, "REGEX"));
+        return Task.FromResult<List<ParsedIntent>?>(result);
     }
 }

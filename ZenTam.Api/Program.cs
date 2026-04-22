@@ -26,6 +26,7 @@ builder.Services.AddScoped<RuleResolver>();
 builder.Services.AddSingleton<ISpiritualRule, KimLauRule>();
 builder.Services.AddSingleton<ISpiritualRule, HoangOcRule>();
 builder.Services.AddSingleton<ISpiritualRule, TamTaiRule>();
+builder.Services.AddSingleton<ISpiritualRule, ThaiTueRule>();
 
 // ── Feature handlers ──────────────────────────────────────────────────────────
 builder.Services.AddScoped<EvaluateActionHandler>();

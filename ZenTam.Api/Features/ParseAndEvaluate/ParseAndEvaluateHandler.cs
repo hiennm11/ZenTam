@@ -30,7 +30,7 @@ public class ParseAndEvaluateHandler
         _logger          = logger;
     }
 
-    public async Task<EvaluateActionResponse> HandleAsync(
+    public async Task<List<EvaluateActionResponse>> HandleAsync(
         ParseAndEvaluateRequest request,
         CancellationToken ct = default)
     {
@@ -38,52 +38,48 @@ public class ParseAndEvaluateHandler
         var vnTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
         int currentYear = TimeZoneInfo.ConvertTime(DateTime.UtcNow, vnTimeZone).Year;
 
-        // Step b — Try Regex
-        var intent = await _regexParser.TryParseAsync(request.Text, currentYear, ct);
+        // // Step b — Try Regex
+        // var intents = await _regexParser.TryParseAsync(request.Text, currentYear, ct);
 
-        string cacheKey;
+        // // Step c/d — Fall back to SLM if Regex missed
+        // if (intents is null)
+        // {
+        //     intents = await _slmParser.TryParseAsync(request.Text, currentYear, ct);
+        //     if (intents is null)
+        //         throw new UnprocessableEntityException("Không thể hiểu yêu cầu, vui lòng nói rõ hơn.");
+        // }
 
-        // Step c — If regex hit, check cache
-        if (intent is not null)
-        {
-            cacheKey = BuildCacheKey(request.UserId, intent.ActionCode!, intent.TargetYear!.Value);
-            var cached = await _cache.GetAsync<EvaluateActionResponse>(cacheKey, ct);
-            if (cached is not null)
-            {
-                _logger.LogInformation("Cache HIT (REGEX path) for key {Key}", cacheKey);
-                return cached;
-            }
-        }
-        // Step d — If regex miss, try SLM
-        else
-        {
-            intent = await _slmParser.TryParseAsync(request.Text, currentYear, ct);
-            if (intent is null)
+        var intents = await _slmParser.TryParseAsync(request.Text, currentYear, ct);
+            if (intents is null)
                 throw new UnprocessableEntityException("Không thể hiểu yêu cầu, vui lòng nói rõ hơn.");
 
-            cacheKey = BuildCacheKey(request.UserId, intent.ActionCode!, intent.TargetYear!.Value);
+        // Step e/f/g — Evaluate each intent (cache-aside per intent)
+        var results = new List<EvaluateActionResponse>(intents.Count);
+        foreach (var intent in intents)
+        {
+            var cacheKey = BuildCacheKey(request.UserId, intent.ActionCode!, intent.TargetYear!.Value);
+
             var cached = await _cache.GetAsync<EvaluateActionResponse>(cacheKey, ct);
             if (cached is not null)
             {
-                _logger.LogInformation("Cache HIT (SLM path) for key {Key}", cacheKey);
-                return cached;
+                _logger.LogInformation("Cache HIT ({Source} path) for key {Key}", intent.Source, cacheKey);
+                results.Add(cached);
+                continue;
             }
+
+            var evalRequest = new EvaluateActionRequest
+            {
+                UserId     = request.UserId,
+                ActionCode = intent.ActionCode!,
+                TargetYear = intent.TargetYear!.Value
+            };
+            var result = await _evaluateHandler.HandleAsync(evalRequest, ct);
+
+            await _cache.SetAsync(cacheKey, result, TimeSpan.FromHours(24), ct);
+            results.Add(result);
         }
 
-        // Step e — Run Rules Engine
-        var evalRequest = new EvaluateActionRequest
-        {
-            UserId     = request.UserId,
-            ActionCode = intent.ActionCode!,
-            TargetYear = intent.TargetYear!.Value
-        };
-        var result = await _evaluateHandler.HandleAsync(evalRequest, ct);
-
-        // Step f — Write to cache
-        await _cache.SetAsync(cacheKey, result, TimeSpan.FromHours(24), ct);
-
-        // Step g — Return
-        return result;
+        return results;
     }
 
     private static string BuildCacheKey(Guid userId, string actionCode, int targetYear)

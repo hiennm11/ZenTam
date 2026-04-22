@@ -6,20 +6,56 @@ namespace ZenTam.Api.Features.ParseAndEvaluate.IntentParsing;
 public class SLMIntentParser(IHttpClientFactory httpClientFactory, ILogger<SLMIntentParser> logger) : IIntentParser
 {
     private const string SystemPromptTemplate =
-        "You are a strict JSON extraction bot. Current date context: {0} (Vietnam, UTC+7).\n\n" +
-        "Extract from the user's message (which may be in Vietnamese slang):\n" +
-        "- \"actionCode\": one of [XAY_NHA, CUOI_HOI, XUAT_HANH, MUA_XE]. Return null if unclear.\n" +
-        "- \"targetYear\": integer year. Resolve relative terms: \"sang nam\"={1}, \"nam nay\"={0}, \"nam toi\"={1}.\n\n" +
-        "RULES:\n" +
-        "- Return ONLY valid JSON. No explanation. No markdown.\n" +
-        "- If you cannot extract actionCode, return: {{\"actionCode\": null, \"targetYear\": null}}\n\n" +
-        "Output format: {{\"actionCode\": \"XAY_NHA\", \"targetYear\": 2027}}";
+        """
+        Bạn là một AI phân tích ý định chuyên dụng cho hệ thống Thuật số phương Đông.
+        Nhiệm vụ của bạn là đọc câu văn của người dùng và trích xuất các ý định (intents) thành mảng JSON.
 
-    public async Task<ParsedIntent?> TryParseAsync(string text, int currentYear, CancellationToken ct = default)
+        [NGỮ CẢNH HỆ THỐNG]
+        - Năm hiện tại (Năm nay): {CURRENT_YEAR}
+
+        [TỪ ĐIỂN ACTION_CODE CHO PHÉP]
+        - XAY_NHA : Làm nhà, cất nhà, động thổ, xây dựng.
+        - SUA_NHA : Sửa chữa, tu tạo nhà.
+        - NHAP_TRACH : Chuyển nhà, lên nhà mới.
+        - CUOI_HOI : Cưới vợ, gả chồng, kết hôn.
+        - SINH_CON : Đẻ con, có em bé.
+        - KHAI_TRUONG : Mở cửa hàng, bắt đầu kinh doanh.
+        - MUA_XE : Mua ô tô, xe máy.
+        - MUA_DAT : Mua đất, mua nhà.
+        - XUAT_HANH : Đi xa, công tác, du học.
+        - KY_HOP_DONG : Ký kết, giao dịch lớn.
+        - NHAN_VIEC : Chuyển việc, nhận chức.
+
+        [LUẬT TRÍCH XUẤT]
+        1. Tuyệt đối chỉ trả về dữ liệu định dạng JSON, không giải thích, không thêm text thừa.
+        2. Output phải là một object chứa mảng "intents".
+        3. Xác định đúng "targetYear" dựa vào ngữ cảnh (ví dụ: "năm nay" -> năm hiện tại, "sang năm" / "năm sau" -> năm hiện tại + 1, "năm 2028" -> 2028).
+        4. Nếu người dùng hỏi nhiều việc cùng lúc, hãy tạo nhiều object trong mảng.
+
+        [VÍ DỤ]
+        User: "Năm nay tao tính xây nhà với mua con xe"
+        AI:
+        {
+          "intents": [
+            { "actionCode": "XAY_NHA", "targetYear": 2026 },
+            { "actionCode": "MUA_XE", "targetYear": 2026 }
+          ]
+        }
+
+        User: "Sang năm cưới vợ được không m?"
+        AI:
+        {
+          "intents": [
+            { "actionCode": "CUOI_HOI", "targetYear": 2027 }
+          ]
+        }
+        """;
+
+    public async Task<List<ParsedIntent>?> TryParseAsync(string text, int currentYear, CancellationToken ct = default)
     {
         try
         {
-            string systemPrompt = string.Format(SystemPromptTemplate, currentYear, currentYear + 1);
+            string systemPrompt = SystemPromptTemplate.Replace("{CURRENT_YEAR}", currentYear.ToString());
 
             var requestBody = new
             {
@@ -48,19 +84,26 @@ public class SLMIntentParser(IHttpClientFactory httpClientFactory, ILogger<SLMIn
                 return null;
 
             using var parsed = JsonDocument.Parse(content);
-            string? actionCode = parsed.RootElement.GetProperty("actionCode").GetString();
-
-            if (actionCode is null)
+            var intentsEl = parsed.RootElement.GetProperty("intents");
+            if (intentsEl.GetArrayLength() == 0)
                 return null;
 
-            int? targetYear = null;
-            if (parsed.RootElement.TryGetProperty("targetYear", out var yearEl)
-                && yearEl.ValueKind == JsonValueKind.Number)
+            var result = new List<ParsedIntent>();
+            foreach (var item in intentsEl.EnumerateArray())
             {
-                targetYear = yearEl.GetInt32();
+                string? actionCode = item.GetProperty("actionCode").GetString();
+                if (actionCode is null) continue;
+
+                int? targetYear = null;
+                if (item.TryGetProperty("targetYear", out var yearEl)
+                    && yearEl.ValueKind == JsonValueKind.Number)
+                {
+                    targetYear = yearEl.GetInt32();
+                }
+                result.Add(new ParsedIntent(actionCode, targetYear ?? currentYear, "SLM"));
             }
 
-            return new ParsedIntent(actionCode, targetYear ?? currentYear, "SLM");
+            return result.Count == 0 ? null : result;
         }
         catch (Exception ex) when (ex is JsonException
                                        or HttpRequestException
