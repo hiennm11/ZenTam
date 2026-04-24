@@ -20,7 +20,7 @@ namespace ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 /// </summary>
 public class KimLauRule : ISpiritualRule
 {
-    public string RuleCode => "Rule_KimLau";
+    public string RuleCode => "KimLau";
 
     private static readonly int[] FailRemainders = { 1, 3, 6, 8 };
 

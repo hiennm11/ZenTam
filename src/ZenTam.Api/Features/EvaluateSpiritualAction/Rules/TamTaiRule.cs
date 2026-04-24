@@ -26,7 +26,7 @@ namespace ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 /// </summary>
 public class TamTaiRule : ISpiritualRule
 {
-    public string RuleCode => "Rule_TamTai";
+    public string RuleCode => "TamTai";
 
     // Index 0 unused; Chi values are 1-based.
     private static readonly string[] ChiNames =

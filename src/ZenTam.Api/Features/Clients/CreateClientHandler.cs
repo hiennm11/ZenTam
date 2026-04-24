@@ -21,7 +21,7 @@ public class CreateClientHandler
             Name = request.Name,
             PhoneNumber = request.PhoneNumber,
             SolarDob = request.SolarDob,
-            Gender = request.Gender,
+            Gender = request.Gender!.Value,
             Notes = request.Notes,
             CreatedAt = DateTime.UtcNow
         };

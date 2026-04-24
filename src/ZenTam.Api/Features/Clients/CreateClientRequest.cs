@@ -8,7 +8,7 @@ public class CreateClientRequest
     public string Name { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
     public DateTime SolarDob { get; init; }
-    public Gender Gender { get; init; }
+    public Gender? Gender { get; init; }
     public string? Notes { get; init; }
 }
 
@@ -31,6 +31,7 @@ public class CreateClientValidator : AbstractValidator<CreateClientRequest>
             .Must(BeValidAge).WithMessage("Age must be between 1 and 120 years");
 
         RuleFor(x => x.Gender)
+            .NotNull().WithMessage("Gender is required")
             .IsInEnum().WithMessage("Gender must be 0 (Male) or 1 (Female)");
 
         RuleFor(x => x.Notes)

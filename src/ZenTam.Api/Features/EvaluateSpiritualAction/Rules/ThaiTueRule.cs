@@ -23,7 +23,7 @@ namespace ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 /// </summary>
 public class ThaiTueRule : ISpiritualRule
 {
-    public string RuleCode => "Rule_ThaiTue";
+    public string RuleCode => "ThaiTue";
 
     private static readonly string[] ChiNames =
         { "", "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi" };

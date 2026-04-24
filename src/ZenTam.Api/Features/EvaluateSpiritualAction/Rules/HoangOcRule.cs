@@ -20,7 +20,7 @@ namespace ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 /// </summary>
 public class HoangOcRule : ISpiritualRule
 {
-    public string RuleCode => "Rule_HoangOc";
+    public string RuleCode => "HoangOc";
 
     private static readonly string[] CungNames =
     {

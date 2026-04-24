@@ -6,7 +6,11 @@ public class ParseAndEvaluateValidator : AbstractValidator<ParseAndEvaluateReque
 {
     public ParseAndEvaluateValidator()
     {
-        RuleFor(x => x.ClientId).NotEmpty().WithMessage("ClientId is required");
-        RuleFor(x => x.Message).NotEmpty().MaximumLength(1000);
+        RuleFor(x => x.ClientId)
+            .NotEmpty().WithMessage("ClientId is required")
+            .NotEqual(Guid.Empty).WithMessage("ClientId cannot be empty");
+        RuleFor(x => x.Message)
+            .NotEmpty().WithMessage("Message is required")
+            .MaximumLength(500).WithMessage("Message must not exceed 500 characters");
     }
 }
