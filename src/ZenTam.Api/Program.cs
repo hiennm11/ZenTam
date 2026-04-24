@@ -4,14 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using StackExchange.Redis;
 using ZenTam.Api.Common.Caching;
-using ZenTam.Api.Features.ParseAndEvaluate.IntentParsing;
+using ZenTam.Api.Features.ParseAndEvaluate.Queries.IntentParsing;
 using ZenTam.Api.Common.Lunar;
 using ZenTam.Api.Common.Rules;
-using ZenTam.Api.Features.EvaluateSpiritualAction;
+using ZenTam.Api.Features.EvaluateSpiritualAction.Queries;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
-using ZenTam.Api.Features.ParseAndEvaluate;
+using ZenTam.Api.Features.ParseAndEvaluate.Queries;
 using ZenTam.Api.Infrastructure;
-using ZenTam.Api.Features.Clients;
+using ZenTam.Api.Features.Clients.Commands;
+using ZenTam.Api.Features.Clients.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 

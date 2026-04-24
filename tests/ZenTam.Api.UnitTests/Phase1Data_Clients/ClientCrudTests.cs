@@ -2,7 +2,8 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Exceptions;
-using ZenTam.Api.Features.Clients;
+using ZenTam.Api.Features.Clients.Commands;
+using ZenTam.Api.Features.Clients.Queries;
 using ZenTam.Api.Infrastructure;
 using ZenTam.Api.Infrastructure.Entities;
 

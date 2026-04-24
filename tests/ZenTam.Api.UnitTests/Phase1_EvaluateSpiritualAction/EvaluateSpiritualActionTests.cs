@@ -5,7 +5,7 @@ using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Exceptions;
 using ZenTam.Api.Common.Lunar;
 using ZenTam.Api.Common.Rules;
-using ZenTam.Api.Features.EvaluateSpiritualAction;
+using ZenTam.Api.Features.EvaluateSpiritualAction.Queries;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 using ZenTam.Api.Infrastructure;
 using ZenTam.Api.Infrastructure.Entities;
