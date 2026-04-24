@@ -11,6 +11,7 @@ using ZenTam.Api.Features.EvaluateSpiritualAction;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 using ZenTam.Api.Features.ParseAndEvaluate;
 using ZenTam.Api.Infrastructure;
+using ZenTam.Api.Features.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,14 @@ builder.Services.AddSingleton<ISpiritualRule, ThaiTueRule>();
 // ── Feature handlers ──────────────────────────────────────────────────────────
 builder.Services.AddScoped<EvaluateActionHandler>();
 builder.Services.AddValidatorsFromAssemblyContaining<EvaluateActionValidator>();
+
+// ── Client feature handlers ──────────────────────────────────────────────────
+builder.Services.AddScoped<CreateClientHandler>();
+builder.Services.AddScoped<SearchClientsHandler>();
+builder.Services.AddScoped<GetClientHandler>();
+builder.Services.AddScoped<AddRelatedPersonHandler>();
+builder.Services.AddScoped<DeleteRelatedPersonHandler>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateClientValidator>();
 
 // ── Cache ─────────────────────────────────────────────────────────────────────
 string? redisConnectionString = builder.Configuration.GetConnectionString("Redis");
@@ -81,5 +90,12 @@ app.MapScalarApiReference();
 
 EvaluateActionEndpoint.Map(app);
 ParseAndEvaluateEndpoint.Map(app);
+
+// ── Client CRUD endpoints ────────────────────────────────────────────────────
+CreateClientEndpoint.Map(app);
+SearchClientsEndpoint.Map(app);
+GetClientEndpoint.Map(app);
+AddRelatedPersonEndpoint.Map(app);
+DeleteRelatedPersonEndpoint.Map(app);
 
 app.Run();
