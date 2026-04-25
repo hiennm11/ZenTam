@@ -6,7 +6,8 @@ namespace ZenTam.Api.Common.CanChi;
 /// Can Chi (Stem-Branch) Calculator implementation.
 /// Stateless, thread-safe, singleton-ready.
 /// </summary>
-public class CanChiCalculator : ICanChiCalculator
+public class CanChiCalculator(
+    ZenTam.Api.Common.Lunar.ILunarCalculatorService lunarCalculator) : ICanChiCalculator
 {
     // 10 Heavenly Stems
     private static readonly string[] Cans =
@@ -169,5 +170,11 @@ public class CanChiCalculator : ICanChiCalculator
     public int GetNhiThapBatTu(int jdn)
     {
         return jdn % NhiThapBatTuCycleLength;
+    }
+
+    /// <inheritdoc />
+    public int GetJulianDayNumber(DateTime solarDate)
+    {
+        return lunarCalculator.GetJulianDayNumber(solarDate.Year, solarDate.Month, solarDate.Day);
     }
 }

@@ -48,6 +48,72 @@ public class AmLichCalculator : ILunarCalculatorService
         };
     }
 
+    /// <inheritdoc/>
+    public int GetJulianDayNumber(int year, int month, int day)
+        => JulianDayNumber(day, month, year);
+
+    /// <inheritdoc/>
+    public int GetLunarNewYearJdn(int lunarYear)
+    {
+        // Find a solar date that falls on mùng 1 tháng giêng of the given lunar year
+        // Strategy: search around January-February of the solar year
+        var searchYear = lunarYear;
+        
+        // First try around January 20-February 20 of the solar year matching lunar year
+        for (int month = 1; month <= 2; month++)
+        {
+            for (int day = 20; day <= 28; day++)
+            {
+                var solar = new DateTime(searchYear, month, day);
+                var lunar = Convert(solar);
+                if (lunar.LunarYear == lunarYear && lunar.LunarMonth == 1 && lunar.LunarDay == 1)
+                {
+                    return GetJulianDayNumber(searchYear, month, day);
+                }
+            }
+        }
+        
+        // Fallback: binary search in January-February range
+        int low = 20, high = 59; // days in Jan-Feb
+        while (low <= high)
+        {
+            int mid = (low + high) / 2;
+            int m = mid <= 31 ? 1 : 2;
+            int d = mid <= 31 ? mid : mid - 31;
+            var solar = new DateTime(searchYear, m, d);
+            var lunar = Convert(solar);
+            
+            if (lunar.LunarYear < lunarYear)
+                low = mid + 1;
+            else if (lunar.LunarYear > lunarYear)
+                high = mid - 1;
+            else if (lunar.LunarMonth < 1)
+                low = mid + 1;
+            else if (lunar.LunarMonth > 1)
+                high = mid - 1;
+            else if (lunar.LunarDay < 1)
+                low = mid + 1;
+            else if (lunar.LunarDay > 1)
+                high = mid - 1;
+            else
+                return GetJulianDayNumber(searchYear, m, d);
+        }
+        
+        // Fallback calculation: approximate Tết date
+        // Lunar new year is between Jan 21 and Feb 20
+        for (int offset = 0; offset <= 30; offset++)
+        {
+            var candidate = new DateTime(searchYear, 1, 21).AddDays(offset);
+            var lunar = Convert(candidate);
+            if (lunar.LunarYear == lunarYear && lunar.LunarMonth == 1 && lunar.LunarDay == 1)
+            {
+                return GetJulianDayNumber(searchYear, 1, 21 + offset);
+            }
+        }
+        
+        throw new InvalidOperationException($"Cannot find lunar new year JDN for lunar year {lunarYear}");
+    }
+
     // ─── Core conversion ────────────────────────────────────────────────────────
 
     /// <summary>

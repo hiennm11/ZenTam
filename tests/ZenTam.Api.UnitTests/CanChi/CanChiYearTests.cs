@@ -3,10 +3,11 @@ namespace ZenTam.Api.UnitTests.CanChi;
 using FluentAssertions;
 using ZenTam.Api.Common.CanChi;
 using ZenTam.Api.Common.CanChi.Models;
+using ZenTam.Api.Common.Lunar;
 
 public class CanChiYearTests
 {
-    private readonly ICanChiCalculator _calculator = new CanChiCalculator();
+    private readonly ICanChiCalculator _calculator = new CanChiCalculator(new AmLichCalculator());
 
     #region Core Checkpoint Tests
 

@@ -2,10 +2,11 @@ namespace ZenTam.Api.UnitTests.CanChi;
 
 using FluentAssertions;
 using ZenTam.Api.Common.CanChi;
+using ZenTam.Api.Common.Lunar;
 
 public class NhiThapBatTuTests
 {
-    private readonly ICanChiCalculator _calculator = new CanChiCalculator();
+    private readonly ICanChiCalculator _calculator = new CanChiCalculator(new AmLichCalculator());
 
     private const int JdnAnchor = 2444235; // 1984-01-01
 

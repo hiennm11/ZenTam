@@ -36,6 +36,11 @@ public interface ICanChiCalculator
     CanChiDay GetCanChiNgay(int jdn);
 
     /// <summary>
+    /// Computes JDN for a solar date.
+    /// </summary>
+    int GetJulianDayNumber(DateTime solarDate);
+
+    /// <summary>
     /// Gets Can Chi for hour.
     /// gioBatDau: 23=Tý, 1=Sửu, 3=Dần... (23 means start at Tý hour)
     /// </summary>
