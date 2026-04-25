@@ -1,10 +1,14 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using ZenTam.Api.Common.CanChi;
+using ZenTam.Api.Common.CanChi.Models;
 using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Exceptions;
 using ZenTam.Api.Common.Lunar;
 using ZenTam.Api.Common.Rules;
+using ZenTam.Api.Domain.Rules.MonthlyRuleEngine.Models;
+using ZenTam.Api.Domain.Services;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Queries;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 using ZenTam.Api.Infrastructure;
@@ -17,6 +21,8 @@ public class EvaluateSpiritualActionTests
     private readonly ZenTamDbContext _db;
     private readonly RuleResolver _ruleResolver;
     private readonly Mock<ILunarCalculatorService> _lunarCalculatorMock;
+    private readonly Mock<IGanhMenhService> _ganhMenhServiceMock;
+    private readonly Mock<ICanChiCalculator> _canChiCalculatorMock;
     private readonly EvaluateActionHandler _handler;
 
     public EvaluateSpiritualActionTests()
@@ -32,8 +38,18 @@ public class EvaluateSpiritualActionTests
         _ruleResolver = new RuleResolver(rules);
         _lunarCalculatorMock = new Mock<ILunarCalculatorService>();
         _lunarCalculatorMock.Setup(l => l.Convert(It.IsAny<DateTime>()))
-            .Returns(new LunarDateContext { LunarYear = 1996, LunarMonth = 4, LunarDay = 15 });
-        _handler = new EvaluateActionHandler(_db, _ruleResolver, _lunarCalculatorMock.Object);
+            .Returns(new LunarDateContext { LunarYear = 1996, LunarMonth = 4, LunarDay = 15, IsLeap = false });
+        _ganhMenhServiceMock = new Mock<IGanhMenhService>();
+        _canChiCalculatorMock = new Mock<ICanChiCalculator>();
+        _canChiCalculatorMock.Setup(c => c.GetCanChiNam(It.IsAny<int>()))
+            .Returns(new CanChiYear("Giáp", "Tý"));
+        _canChiCalculatorMock.Setup(c => c.GetJulianDayNumber(It.IsAny<DateTime>()))
+            .Returns(2460000);
+        _canChiCalculatorMock.Setup(c => c.GetCanChiNgay(It.IsAny<int>()))
+            .Returns(new CanChiDay("Giáp", "Tý"));
+        _handler = new EvaluateActionHandler(
+            _db, _ruleResolver, _lunarCalculatorMock.Object,
+            _ganhMenhServiceMock.Object, _canChiCalculatorMock.Object);
     }
 
     private static ZenTamDbContext CreateInMemoryDbContext()
@@ -305,6 +321,268 @@ public class EvaluateSpiritualActionTests
         var act = async () => await _handler.HandleAsync(request);
         await act.Should().ThrowAsync<NotFoundException>()
             .WithMessage("Action 'INVALID' was not found.");
+    }
+
+    #endregion
+
+    #region TC-08 to TC-11 — Gánh Mệnh Integration Tests
+
+    /// <summary>
+    /// TC-08: Verdict = CAM + No family → stays CAM, GanhMenh = null
+    /// </summary>
+    [Fact]
+    public async Task TC08_CamVerdict_NoFamilyMembers_GanhMenhIsNull()
+    {
+        // Arrange: User 1990 with no ClientProfile (or no RelatedPersons)
+        var userId = new Guid("11111111-1111-1111-1111-111111111111");
+        var request = new EvaluateActionRequest
+        {
+            UserId = userId,
+            ActionCode = "XAY_NHA",
+            TargetYear = 2026
+        };
+
+        // Act
+        var response = await _handler.HandleAsync(request);
+
+        // Assert: Verdict is CAM (KimLau failed)
+        response.Verdict.Should().Be("CAM");
+        response.GanhMenh.Should().BeNull();
+    }
+
+    /// <summary>
+    /// TC-09: Verdict = CAM + Family CAN gánh → changes to CANH_BAO, GanhMenh populated
+    /// </summary>
+    [Fact]
+    public async Task TC09_CamVerdict_FamilyCanGanh_VerdictChangesToCanhBao()
+    {
+        // Arrange: Set up user with ClientProfile and RelatedPersons
+        var userId = new Guid("11111111-1111-1111-1111-111111111111");
+        var clientId = userId; // ClientProfile.Id matches User.Id
+
+        var clientProfile = new ClientProfile
+        {
+            Id = clientId,
+            Name = "Test Client",
+            PhoneNumber = "123456789",
+            SolarDob = new DateTime(1990, 5, 15),
+            Gender = Gender.Male,
+            CreatedAt = DateTime.UtcNow
+        };
+        clientProfile.RelatedPersons.Add(new ClientRelatedPerson
+        {
+            Id = Guid.NewGuid(),
+            ClientId = clientId,
+            Label = "VỢ",
+            SolarDob = new DateTime(1992, 3, 20),
+            Gender = Gender.Female,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        _db.ClientProfiles.Add(clientProfile);
+        await _db.SaveChangesAsync();
+
+        // Setup mock to return a successful Gánh Mệnh result
+        var ganhMenhResult = new GanhMenhResult
+        {
+            CanGanh = true,
+            HighestSeverityAmongFamily = 1,
+            MemberEvaluations = new List<MemberEvaluation>
+            {
+                new MemberEvaluation
+                {
+                    Name = "VỢ",
+                    Relationship = RelationshipType.Vo,
+                    Verdict = DayVerdict.Binh,
+                    Severity = 1
+                }
+            }
+        };
+
+        var handlerWithGanhMenh = CreateHandlerWithGanhMenhMock(ganhMenhResult);
+
+        var request = new EvaluateActionRequest
+        {
+            UserId = userId,
+            ActionCode = "XAY_NHA",
+            TargetYear = 2026
+        };
+
+        // Act
+        var response = await handlerWithGanhMenh.HandleAsync(request);
+        
+        // Wait for fire-and-forget Gánh Mệnh background task to complete
+        await Task.Delay(500);
+
+        // Assert: Verdict changed to CANH_BAO because family can gánh
+        response.Verdict.Should().Be("CANH_BAO");
+        response.GanhMenh.Should().NotBeNull();
+        response.GanhMenh!.CanGanh.Should().BeTrue();
+    }
+
+    /// <summary>
+    /// TC-10: Verdict = CAM + Family CANNOT gánh → stays CAM, GanhMenh shows failed attempts
+    /// </summary>
+    [Fact]
+    public async Task TC10_CamVerdict_FamilyCannotGanh_VerdictStaysCam()
+    {
+        // Arrange: Set up user with ClientProfile and RelatedPersons with bad zodiac
+        var userId = new Guid("11111111-1111-1111-1111-111111111111");
+        var clientId = userId;
+
+        var clientProfile = new ClientProfile
+        {
+            Id = clientId,
+            Name = "Test Client",
+            PhoneNumber = "123456789",
+            SolarDob = new DateTime(1990, 5, 15),
+            Gender = Gender.Male,
+            CreatedAt = DateTime.UtcNow
+        };
+        clientProfile.RelatedPersons.Add(new ClientRelatedPerson
+        {
+            Id = Guid.NewGuid(),
+            ClientId = clientId,
+            Label = "VỢ",
+            SolarDob = new DateTime(1992, 3, 20),
+            Gender = Gender.Female,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        _db.ClientProfiles.Add(clientProfile);
+        await _db.SaveChangesAsync();
+
+        // Setup mock to return failure (no family member can gánh)
+        var ganhMenhResult = new GanhMenhResult
+        {
+            CanGanh = false,
+            HighestSeverityAmongFamily = 3,
+            MemberEvaluations = new List<MemberEvaluation>
+            {
+                new MemberEvaluation
+                {
+                    Name = "VỢ",
+                    Relationship = RelationshipType.Vo,
+                    Verdict = DayVerdict.Hung,
+                    Severity = 3
+                }
+            }
+        };
+
+        var handlerWithGanhMenh = CreateHandlerWithGanhMenhMock(ganhMenhResult);
+
+        var request = new EvaluateActionRequest
+        {
+            UserId = userId,
+            ActionCode = "XAY_NHA",
+            TargetYear = 2026
+        };
+
+        // Act
+        var response = await handlerWithGanhMenh.HandleAsync(request);
+        
+        // Wait for fire-and-forget Gánh Mệnh background task to complete
+        await Task.Delay(500);
+
+        // Assert: Verdict stays CAM because no family member can gánh
+        response.Verdict.Should().Be("CAM");
+        response.GanhMenh.Should().NotBeNull();
+        response.GanhMenh!.CanGanh.Should().BeFalse();
+    }
+
+    /// <summary>
+    /// TC-11: Verdict = CANH_BAO → No Gánh Mệnh check (performance optimization)
+    /// </summary>
+    [Fact]
+    public async Task TC11_CanhBaoVerdict_GanhMenhServiceNeverCalled()
+    {
+        // Arrange: User 1986 with TargetYear 2028 gives CANH_BAO (TamTai failed, non-mandatory)
+        var userId = new Guid("33333333-3333-3333-3333-333333333333");
+        var request = new EvaluateActionRequest
+        {
+            UserId = userId,
+            ActionCode = "XAY_NHA",
+            TargetYear = 2028
+        };
+
+        // Act
+        var response = await _handler.HandleAsync(request);
+
+        // Assert: Verdict is CANH_BAO (not CAM), so Gánh Mệnh should not be called
+        response.Verdict.Should().Be("CANH_BAO");
+        _ganhMenhServiceMock.Verify(
+            g => g.Evaluate(
+                It.IsAny<DateTime>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<bool>(),
+                It.IsAny<CanChiDay>(),
+                It.IsAny<IEnumerable<FamilyMember>>()),
+            Times.Never);
+    }
+
+    /// <summary>
+    /// TC-12: Verdict = AN_TOAN → No Gánh Mệnh check
+    /// </summary>
+    [Fact]
+    public async Task TC12_AnToanVerdict_GanhMenhServiceNeverCalled()
+    {
+        // Arrange: User 1996 with TargetYear 2026 gives AN_TOAN
+        var userId = new Guid("3c7be808-02c1-4f24-85e1-26f0f2455675");
+        var request = new EvaluateActionRequest
+        {
+            UserId = userId,
+            ActionCode = "XAY_NHA",
+            TargetYear = 2026
+        };
+
+        // Act
+        var response = await _handler.HandleAsync(request);
+
+        // Assert: Verdict is AN_TOAN, Gánh Mệnh should not be called
+        response.Verdict.Should().Be("AN_TOAN");
+        _ganhMenhServiceMock.Verify(
+            g => g.Evaluate(
+                It.IsAny<DateTime>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<bool>(),
+                It.IsAny<CanChiDay>(),
+                It.IsAny<IEnumerable<FamilyMember>>()),
+            Times.Never);
+    }
+
+    /// <summary>
+    /// Helper method to create handler with custom Gánh Mệnh mock result.
+    /// Used for TC-09 and TC-10 where we need to control the Gánh Mệnh outcome.
+    /// </summary>
+    private EvaluateActionHandler CreateHandlerWithGanhMenhMock(GanhMenhResult ganhMenhResult)
+    {
+        var ganhMenhServiceMock = new Mock<IGanhMenhService>();
+        ganhMenhServiceMock.Setup(g => g.Evaluate(
+            It.IsAny<DateTime>(),
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            It.IsAny<bool>(),
+            It.IsAny<CanChiDay>(),
+            It.IsAny<IEnumerable<FamilyMember>>()))
+            .Returns(ganhMenhResult);
+
+        var canChiCalculatorMock = new Mock<ICanChiCalculator>();
+        canChiCalculatorMock.Setup(c => c.GetCanChiNam(It.IsAny<int>()))
+            .Returns(new CanChiYear("Giáp", "Tý"));
+        canChiCalculatorMock.Setup(c => c.GetJulianDayNumber(It.IsAny<DateTime>()))
+            .Returns(2460000);
+        canChiCalculatorMock.Setup(c => c.GetCanChiNgay(It.IsAny<int>()))
+            .Returns(new CanChiDay("Giáp", "Tý"));
+
+        var lunarCalculatorMock = new Mock<ILunarCalculatorService>();
+        lunarCalculatorMock.Setup(l => l.Convert(It.IsAny<DateTime>()))
+            .Returns(new LunarDateContext { LunarYear = 1996, LunarMonth = 4, LunarDay = 15, IsLeap = false });
+
+        return new EvaluateActionHandler(
+            _db, _ruleResolver, lunarCalculatorMock.Object,
+            ganhMenhServiceMock.Object, canChiCalculatorMock.Object);
     }
 
     #endregion
