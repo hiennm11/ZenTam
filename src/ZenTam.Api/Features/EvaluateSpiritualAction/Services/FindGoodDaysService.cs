@@ -57,4 +57,41 @@ public class FindGoodDaysService(
             SuggestedDays: topResults
         );
     }
+
+    public async IAsyncEnumerable<DayScoreResult> StreamFindGoodDaysAsync(
+        FindGoodDaysRequest request,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
+    {
+        int? subjectLunarYear = null;
+
+        // Step 1: Load subject client's lunar year for xung tuổi check
+        if (request.SubjectClientId.HasValue)
+        {
+            var subject = await db.ClientProfiles
+                .FirstOrDefaultAsync(c => c.Id == request.SubjectClientId.Value, ct);
+
+            if (subject != null)
+            {
+                var lunar = lunarCalculator.Convert(subject.SolarDob);
+                subjectLunarYear = lunar.LunarYear;
+            }
+        }
+
+        // Step 2: Iterate through date range and yield each result
+        var current = request.FromDate.ToDateTime(TimeOnly.MinValue);
+        var endDate = request.ToDate.ToDateTime(TimeOnly.MinValue);
+
+        while (current <= endDate)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            var scoreResult = scoreCalculator.Calculate(current, request.Action, subjectLunarYear);
+            yield return scoreResult;
+
+            current = current.AddDays(1);
+
+            // Small delay to prevent CPU spinning (can be removed for max performance)
+            await Task.Delay(1, ct);
+        }
+    }
 }

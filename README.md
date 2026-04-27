@@ -62,6 +62,21 @@ ZenTam/
 - `ConsultationSession` Entity for history
 - Redis Cache for LLM Intent
 
+## Phase 3: Tầng Ngày + Find Good Days API ✅ COMPLETE
+
+### Week 5 (Sprint 3A)
+- [x] ISolarTermCalculator + 24 Tiết Khí
+- [x] CanChiCalculator v2 (fix Thập Nhị Trực)
+- [x] Nhị Thập Bát Tú + Hoàng/Hắc Đạo
+- [x] Sát Chủ + Thọ Tử Calculator
+- [x] Giờ Hoàng Đạo chi tiết API
+
+### Week 6 (Sprint 3B)
+- [x] Find Good Days API
+- [x] Score Calculator (144 ô lookup)
+- [x] Full SSE Streaming
+- [x] Integration Test
+
 ### Phase 2 — Tầng Tháng + Gánh Mệnh (IN PROGRESS 🏗️)
 - CanChi Engine (GetCanChiNam, GetCanChiThang, GetCanChiNgay)
 - Tầng Tháng Rules (Nguyệt Kỵ, Tam Nuông, Xung Tuổi...)
@@ -106,6 +121,88 @@ ZenTam/
 |--------|----------|-------------|
 | `POST` | `/api/chat` | Parse message + evaluate |
 | `POST` | `/api/evaluate/action` | Evaluate action by clientId |
+| `POST` | `/api/evaluate/find-good-days` | Find good days for action |
+| `GET` | `/api/evaluate/find-good-days/stream` | SSE streaming for progress |
+
+#### Find Good Days API
+
+**REST Endpoint**
+```http
+POST /api/evaluate/find-good-days
+Content-Type: application/json
+
+{
+  "clientId": "3c7be808-02c1-4f24-85e1-26f0f2455675",
+  "action": "NHAP_TRACH",
+  "fromDate": "2026-05-01",
+  "toDate": "2026-05-31",
+  "maxResults": 5
+}
+```
+
+**Response:**
+```json
+{
+  "action": "NHAP_TRACH",
+  "searchRangeStart": "2026-05-01",
+  "searchRangeEnd": "2026-05-31",
+  "totalDaysScanned": 31,
+  "suggestedDays": [
+    {
+      "solarDate": "2026-05-05",
+      "lunarDateText": "16/4 Bính Ngọ",
+      "trucName": "Thành",
+      "tuName": "Côn",
+      "score": 75,
+      "isHoangDao": true,
+      "reasons": ["Trực Thành tốt cho nhập trạch", "🌟 Hoàng Đạo"]
+    }
+  ]
+}
+```
+
+**Action Codes:**
+| Code | Description |
+|------|-------------|
+| `NHAP_TRACH` | Nhập trạch (Moving in) |
+| `KET_HON` | Kết hôn (Marriage) |
+| `KHAI_TRUONG` | Khai trương (Grand opening) |
+| `DONG_THO` | Động thổ (Groundbreaking) |
+| `KY_HOP_DONG` | Ký hợp đồng (Sign contract) |
+| `XUAT_HANH` | Xuất hành (Travel) |
+| `TU_TUC` | Tự tứ (Self-reflection) |
+| `CUA_HANG` | Mở cửa hàng (Open shop) |
+| `AN_TANG` | An táng (Funeral) |
+| `TAM_TRIEN` | Tạm triển (Exhibition) |
+| `KHAI_NGHIEP` | Khai nghiệp (Start business) |
+| `CHUA_BENH` | Chữa bệnh (Medical) |
+
+**SSE Streaming Endpoint**
+```http
+GET /api/evaluate/find-good-days/stream?clientId=...&action=NHAP_TRACH&fromDate=2026-05-01&toDate=2026-05-31
+```
+
+**curl example:**
+```bash
+curl -N "http://localhost:5000/api/evaluate/find-good-days/stream?clientId=3c7be808-02c1-4f24-85e1-26f0f2455675&action=NHAP_TRACH&fromDate=2026-05-01&toDate=2026-05-31"
+```
+
+**SSE Events:**
+```
+data: {"progress":1,"total":31,"percent":3,"date":"2026-05-01","score":65,"isGood":true}
+data: {"progress":2,"total":31,"percent":6,"date":"2026-05-02","score":42,"isGood":false}
+```
+
+**Score Calculation (Max 80 points):**
+| Factor | Max Points |
+|--------|------------|
+| Trực (12×12 lookup) | 20 |
+| Nhị Thập Bát Tú | 6 |
+| Hoàng Đạo | 6 |
+| Không Xung Tuổi | 12 |
+| Không Ngày Kỵ | 12 |
+| Không Sát Chủ | 12 |
+| Không Thọ Tử | 12 |
 
 ## 📊 Feature Expansion Roadmap
 

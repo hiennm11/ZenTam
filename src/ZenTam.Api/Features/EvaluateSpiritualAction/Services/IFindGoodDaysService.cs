@@ -7,4 +7,8 @@ public interface IFindGoodDaysService
     Task<FindGoodDaysResponse> FindGoodDaysAsync(
         FindGoodDaysRequest request,
         CancellationToken ct = default);
+
+    IAsyncEnumerable<DayScoreResult> StreamFindGoodDaysAsync(
+        FindGoodDaysRequest request,
+        CancellationToken ct = default);
 }
