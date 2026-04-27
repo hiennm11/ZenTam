@@ -53,6 +53,9 @@ public class AmLichCalculator : ILunarCalculatorService
         => JulianDayNumber(day, month, year);
 
     /// <inheritdoc/>
+    public double GetSunLongitude(int jdn) => SunLongitude(jdn);
+
+    /// <inheritdoc/>
     public int GetLunarNewYearJdn(int lunarYear)
     {
         // Find a solar date that falls on mùng 1 tháng giêng of the given lunar year

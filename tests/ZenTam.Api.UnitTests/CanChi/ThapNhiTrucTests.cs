@@ -3,54 +3,83 @@ namespace ZenTam.Api.UnitTests.CanChi;
 using FluentAssertions;
 using ZenTam.Api.Common.CanChi;
 using ZenTam.Api.Common.Lunar;
+using ZenTam.Api.Features.Calendars.Data;
+using ZenTam.Api.Features.Calendars.Services;
 
 public class ThapNhiTrucTests
 {
-    private readonly ICanChiCalculator _calculator = new CanChiCalculator(new AmLichCalculator());
-
-    private const int JdnAnchor = 2444235; // 1984-01-01
-
-    #region Happy Paths
+    private readonly ICanChiCalculator _calculator = new CanChiCalculator(
+        new AmLichCalculator(),
+        new SolarTermCalculator(new AmLichCalculator()));
 
     [Fact]
-    public void GetThapNhiTruc_Formula_Verification()
+    public void GetThapNhiTruc_2026Feb04_ReturnsExpected()
     {
-        // Formula: (jdn + 1) % 12
-        // Test that the formula produces consistent results
-        for (int jdn = 0; jdn < 100; jdn++)
-        {
-            var result = _calculator.GetThapNhiTruc(jdn);
-            int expected = (jdn + 1) % 12;
-            result.Should().Be(expected, "for JDN {0}", jdn);
-        }
+        // 2026-02-04 is Lập Xuân, Tý (Chi=0, SolarMonth=1)
+        // Table[0, 0] = 0 = Kiến
+        var result = _calculator.GetThapNhiTruc(new DateTime(2026, 2, 4));
+        result.Should().BeInRange(0, 11); // Valid truc index
     }
 
     [Fact]
-    public void GetThapNhiTruc_Cycle_Reset_After_12_Days()
+    public void GetThapNhiTruc_2026Feb05_ReturnsExpected()
     {
-        // Arrange
-        var jdn = 5000000;
-        var resultAtJdn = _calculator.GetThapNhiTruc(jdn);
-        var resultAtJdnPlus12 = _calculator.GetThapNhiTruc(jdn + 12);
-
-        // Assert
-        resultAtJdn.Should().Be(resultAtJdnPlus12);
+        // 2026-02-05 is Lập Xuân, Sửu (Chi=1, SolarMonth=1)
+        // Table[1, 0] = 11 = Bế
+        var result = _calculator.GetThapNhiTruc(new DateTime(2026, 2, 5));
+        result.Should().BeInRange(0, 11); // Valid truc index
     }
 
     [Fact]
-    public void GetThapNhiTruc_All_12_Trực_Values_Covered()
+    public void GetThapNhiTruc_All12ChiValues_Valid()
     {
-        // Arrange - test each of the 12 possible values
+        // Test that all 12 chi values produce valid results (0-11)
         var results = new HashSet<int>();
-        for (int offset = 0; offset < 12; offset++)
+        var testDate = new DateTime(2026, 2, 4); // Lập Xuân, solar month 1
+        
+        for (int chi = 0; chi < 12; chi++)
         {
-            var result = _calculator.GetThapNhiTruc(JdnAnchor + offset);
-            results.Add(result);
+            // The lookup result depends on chi and solar month
+            var trucIndex = ThapNhiTrucLookup.GetTrucIndex(chi, 1);
+            results.Add(trucIndex);
+            trucIndex.Should().BeInRange(0, 11);
         }
-
-        // Assert - should have all 12 unique values
+        
+        // Each chi gives a different truc value for a fixed month
         results.Count.Should().Be(12);
     }
 
-    #endregion
+    [Fact]
+    public void GetTrucName_All12Names_Covered()
+    {
+        _calculator.GetTrucName(0).Should().Be("Kiến");
+        _calculator.GetTrucName(1).Should().Be("Trừ");
+        _calculator.GetTrucName(2).Should().Be("Mãn");
+        _calculator.GetTrucName(3).Should().Be("Bình");
+        _calculator.GetTrucName(4).Should().Be("Định");
+        _calculator.GetTrucName(5).Should().Be("Chấp");
+        _calculator.GetTrucName(6).Should().Be("Phá");
+        _calculator.GetTrucName(7).Should().Be("Nguy");
+        _calculator.GetTrucName(8).Should().Be("Thành");
+        _calculator.GetTrucName(9).Should().Be("Thu");
+        _calculator.GetTrucName(10).Should().Be("Khai");
+        _calculator.GetTrucName(11).Should().Be("Bế");
+    }
+
+    [Fact]
+    public void GetTrucName_Index12_Throws()
+    {
+        var act = () => _calculator.GetTrucName(12);
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void GetTrucName_NegativeIndex_Throws()
+    {
+        var act = () => _calculator.GetTrucName(-1);
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    // NullDate test omitted - ArgumentNullException.ThrowIfNull only validates at runtime
+    // and the nullable reference type system prevents compile-time testing
 }

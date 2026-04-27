@@ -19,4 +19,12 @@ public interface ILunarCalculatorService
     /// Gets the JDN of the first day (mùng 1 tháng giêng) of a lunar year.
     /// </summary>
     int GetLunarNewYearJdn(int lunarYear);
+
+    /// <summary>
+    /// Returns the solar longitude in radians for a given Julian Day Number.
+    /// Each solar term is 15° (π/12 radians).
+    /// </summary>
+    /// <param name="jdn">Julian Day Number</param>
+    /// <returns>Solar longitude in radians [0, 2π)</returns>
+    double GetSunLongitude(int jdn);
 }

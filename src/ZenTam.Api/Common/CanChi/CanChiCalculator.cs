@@ -1,4 +1,6 @@
 using ZenTam.Api.Common.CanChi.Models;
+using ZenTam.Api.Features.Calendars.Data;
+using ZenTam.Api.Features.Calendars.Services;
 
 namespace ZenTam.Api.Common.CanChi;
 
@@ -7,7 +9,8 @@ namespace ZenTam.Api.Common.CanChi;
 /// Stateless, thread-safe, singleton-ready.
 /// </summary>
 public class CanChiCalculator(
-    ZenTam.Api.Common.Lunar.ILunarCalculatorService lunarCalculator) : ICanChiCalculator
+    ZenTam.Api.Common.Lunar.ILunarCalculatorService lunarCalculator,
+    ISolarTermCalculator solarTermCalculator) : ICanChiCalculator
 {
     // 10 Heavenly Stems
     private static readonly string[] Cans =
@@ -46,13 +49,6 @@ public class CanChiCalculator(
         ("Canh", "Thân"), ("Tân", "Dậu"), ("Nhâm", "Tuất"), ("Quý", "Hợi")
     ];
 
-    // Thập Nhị Trực names (12 values)
-    private static readonly string[] ThapNhiTrucNames =
-    [
-        "Kiến", "Trừ", "Mãn", "Bình", "Định", "Chấp",
-        "Phá", "Nguy", "Thành", "Thu", "Khai", "Bế"
-    ];
-
     // Nhị Thập Bát Tú names (28 values)
     private static readonly string[] NhiThapBatTuNames =
     [
@@ -87,11 +83,6 @@ public class CanChiCalculator(
     /// Number of unique Can Chi values for days.
     /// </summary>
     private const int CanChiCycleLength = 60;
-
-    /// <summary>
-    /// Number of Earthly Branches (Trực).
-    /// </summary>
-    private const int ThapNhiTrucCycleLength = 12;
 
     /// <summary>
     /// Number of Lunar Mansions (Tú).
@@ -161,9 +152,26 @@ public class CanChiCalculator(
     }
 
     /// <inheritdoc />
-    public int GetThapNhiTruc(int jdn)
+    public int GetThapNhiTruc(DateTime solarDate)
     {
-        return (jdn + 1) % ThapNhiTrucCycleLength;
+        ArgumentNullException.ThrowIfNull(solarDate);
+        
+        int jdn = GetJulianDayNumber(solarDate);
+        var canChiNgay = GetCanChiNgay(jdn);
+        
+        // Find Chi index (0=Tý, 1=Sửu, ..., 11=Hợi)
+        int chiIndex = Array.IndexOf(Chis, canChiNgay.Chi);
+        
+        // Get solar month from ISolarTermCalculator
+        int solarMonth = solarTermCalculator.GetSolarMonth(solarDate);
+        
+        return ThapNhiTrucLookup.GetTrucIndex(chiIndex, solarMonth);
+    }
+
+    /// <inheritdoc />
+    public string GetTrucName(int index)
+    {
+        return ThapNhiTrucLookup.GetTrucName(index);
     }
 
     /// <inheritdoc />

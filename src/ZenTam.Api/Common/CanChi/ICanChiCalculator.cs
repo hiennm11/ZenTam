@@ -1,4 +1,5 @@
 using ZenTam.Api.Common.CanChi.Models;
+using ZenTam.Api.Features.Calendars.Services;
 
 namespace ZenTam.Api.Common.CanChi;
 
@@ -51,13 +52,18 @@ public interface ICanChiCalculator
 
     /// <summary>
     /// Thập Nhị Trực (12 Earthly Branches for days).
-    /// Formula: (jdn + 1) % 12 → index 0–11
-    /// 0:Kiến, 1:Trừ, 2:Mãn, 3:Bình, 4:Định, 5:Chấp,
-    /// 6:Phá, 7:Nguy, 8:Thành, 9:Thu, 10:Khai, 11:Bế
+    /// Uses 12×12 lookup table based on solar month and Chi of the day.
     /// </summary>
-    /// <param name="jdn">Julian Day Number</param>
+    /// <param name="solarDate">Solar date</param>
     /// <returns>Index 0-11 into ThapNhiTrucNames array</returns>
-    int GetThapNhiTruc(int jdn);
+    int GetThapNhiTruc(DateTime solarDate);
+
+    /// <summary>
+    /// Gets the name of the Trực by index.
+    /// </summary>
+    /// <param name="index">Index 0-11</param>
+    /// <returns>Truc name in Vietnamese</returns>
+    string GetTrucName(int index);
 
     /// <summary>
     /// Nhị Thập Bát Tú (28 Lunar Mansions).
