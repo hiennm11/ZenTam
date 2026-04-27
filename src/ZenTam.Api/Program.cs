@@ -3,11 +3,14 @@ using Scalar.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using StackExchange.Redis;
+using ZenTam.Api.Common.CanChi;
 using ZenTam.Api.Common.Caching;
+using ZenTam.Api.Domain.Services;
 using ZenTam.Api.Features.ParseAndEvaluate.Queries.IntentParsing;
 using ZenTam.Api.Common.Lunar;
 using ZenTam.Api.Common.Rules;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Queries;
+using ZenTam.Api.Features.EvaluateSpiritualAction.Services;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
 using ZenTam.Api.Features.ParseAndEvaluate.Queries;
 using ZenTam.Api.Infrastructure;
@@ -15,6 +18,7 @@ using ZenTam.Api.Features.Clients.Commands;
 using ZenTam.Api.Features.Clients.Queries;
 using ZenTam.Api.Features.Calendars;
 using ZenTam.Api.Features.Calendars.Services;
+using ZenTam.Api.Domain.Rules.MonthlyRuleEngine;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +29,15 @@ builder.Services.AddDbContext<ZenTamDbContext>(opt =>
 // ── Lunar calculator ──────────────────────────────────────────────────────────
 builder.Services.AddScoped<ILunarCalculatorService, AmLichCalculator>();
 
+// ── Solar Term Calculator ─────────────────────────────────────────────────────
+builder.Services.AddScoped<ISolarTermCalculator, SolarTermCalculator>();
+
+// ── Can Chi Calculator ───────────────────────────────────────────────────────
+builder.Services.AddScoped<ICanChiCalculator, CanChiCalculator>();
+
+// ── Gánh Mệnh Service ────────────────────────────────────────────────────────
+builder.Services.AddScoped<IGanhMenhService, GanhMenhService>();
+
 // ── Rule engine ───────────────────────────────────────────────────────────────
 builder.Services.AddScoped<RuleResolver>();
 builder.Services.AddSingleton<ISpiritualRule, KimLauRule>();
@@ -32,9 +45,15 @@ builder.Services.AddSingleton<ISpiritualRule, HoangOcRule>();
 builder.Services.AddSingleton<ISpiritualRule, TamTaiRule>();
 builder.Services.AddSingleton<ISpiritualRule, ThaiTueRule>();
 
+builder.Services.AddSingleton<IMonthlyRuleEngine, MonthlyRuleEngine>();
+
 // ── Feature handlers ──────────────────────────────────────────────────────────
 builder.Services.AddScoped<EvaluateActionHandler>();
 builder.Services.AddValidatorsFromAssemblyContaining<EvaluateActionValidator>();
+
+// ── FindGoodDays services ───────────────────────────────────────────────────
+builder.Services.AddScoped<IDayScoreCalculator, DayScoreCalculator>();
+builder.Services.AddScoped<IFindGoodDaysService, FindGoodDaysService>();
 
 // ── Client feature handlers ──────────────────────────────────────────────────
 builder.Services.AddScoped<CreateClientHandler>();
@@ -97,6 +116,7 @@ app.MapOpenApi();
 app.MapScalarApiReference();
 app.MapControllers();
 
+FindGoodDaysEndpoint.MapFindGoodDays(app);
 EvaluateActionEndpoint.Map(app);
 ParseAndEvaluateEndpoint.Map(app);
 

@@ -231,10 +231,15 @@ public class AmLichCalculator : ILunarCalculatorService
     /// </summary>
     private static int GetLunarMonth11(int yy, double timeZone)
     {
-        int nm      = GetNewMoonDay((int)Math.Floor((yy - 2000) * 12.3685) - 1, timeZone);
+        // JS algorithm (correct): k based on actual Julian Day offset from Dec 31
+        int jdDec31 = JulianDayNumber(31, 12, yy);
+        int off = jdDec31 - 2415021;
+        int k = (int)Math.Floor((double)off / 29.530588853);
+
+        int nm = GetNewMoonDay(k, timeZone);
         int sunLong = GetSunLongitudeAtNewMoon(nm + 1, timeZone);
         if (sunLong >= 9)
-            nm = GetNewMoonDay((int)Math.Floor((yy - 2000) * 12.3685) - 2, timeZone);
+            nm = GetNewMoonDay(k - 1, timeZone);
         return nm;
     }
 

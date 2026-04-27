@@ -50,7 +50,7 @@ public class ParseAndEvaluateTests
         {
             Id = 1,
             ActionId = "XAY_NHA",
-            RuleCode = "Rule_KimLau",
+            RuleCode = "KimLau",
             IsMandatory = true,
             GenderConstraint = Gender.Male
         });
@@ -58,7 +58,7 @@ public class ParseAndEvaluateTests
         {
             Id = 2,
             ActionId = "XAY_NHA",
-            RuleCode = "Rule_HoangOc",
+            RuleCode = "HoangOc",
             IsMandatory = true,
             GenderConstraint = Gender.Male
         });
@@ -66,7 +66,7 @@ public class ParseAndEvaluateTests
         {
             Id = 3,
             ActionId = "XAY_NHA",
-            RuleCode = "Rule_TamTai",
+            RuleCode = "TamTai",
             IsMandatory = false,
             GenderConstraint = Gender.Male
         });

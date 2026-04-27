@@ -59,35 +59,35 @@ public static class DataSeeder
         {
             db.ActionRuleMappings.AddRange(
                 // 1. RULE CHO XÂY DỰNG (Áp tuổi Nam)
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "Rule_KimLau", IsMandatory = true, GenderConstraint = Gender.Male },
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "Rule_HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "Rule_TamTai", IsMandatory = false, GenderConstraint = Gender.Male }, // Cảnh báo
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "Rule_ThaiTue", IsMandatory = false, GenderConstraint = Gender.Male },
+                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "KimLau", IsMandatory = true, GenderConstraint = Gender.Male },
+                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
+                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = Gender.Male }, // Cảnh báo
+                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "ThaiTue", IsMandatory = false, GenderConstraint = Gender.Male },
 
-                new ActionRuleMapping { ActionId = "SUA_NHA", RuleCode = "Rule_HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
-                new ActionRuleMapping { ActionId = "SUA_NHA", RuleCode = "Rule_TamTai", IsMandatory = false, GenderConstraint = Gender.Male },
+                new ActionRuleMapping { ActionId = "SUA_NHA", RuleCode = "HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
+                new ActionRuleMapping { ActionId = "SUA_NHA", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = Gender.Male },
 
-                new ActionRuleMapping { ActionId = "NHAP_TRACH", RuleCode = "Rule_HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
+                new ActionRuleMapping { ActionId = "NHAP_TRACH", RuleCode = "HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
 
                 // 2. RULE CHO CƯỚI HỎI (Áp tuổi Nữ)
-                new ActionRuleMapping { ActionId = "CUOI_HOI", RuleCode = "Rule_KimLau", IsMandatory = true, GenderConstraint = Gender.Female },
-                new ActionRuleMapping { ActionId = "CUOI_HOI", RuleCode = "Rule_TamTai", IsMandatory = false, GenderConstraint = Gender.Female },
+                new ActionRuleMapping { ActionId = "CUOI_HOI", RuleCode = "KimLau", IsMandatory = true, GenderConstraint = Gender.Female },
+                new ActionRuleMapping { ActionId = "CUOI_HOI", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = Gender.Female },
 
                 // 3. RULE CHO SINH CON (Xem tuổi bố mẹ có kỵ Thái Tuế/Tam Tai năm đó không)
-                new ActionRuleMapping { ActionId = "SINH_CON", RuleCode = "Rule_ThaiTue", IsMandatory = false, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "SINH_CON", RuleCode = "Rule_TamTai", IsMandatory = false, GenderConstraint = null },
+                new ActionRuleMapping { ActionId = "SINH_CON", RuleCode = "ThaiTue", IsMandatory = false, GenderConstraint = null },
+                new ActionRuleMapping { ActionId = "SINH_CON", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = null },
 
                 // 4. RULE CHO SỰ NGHIỆP & TÀI SẢN (Không phân biệt Nam/Nữ, kỵ Tam Tai & Thái Tuế)
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "Rule_TamTai", IsMandatory = true, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "Rule_ThaiTue", IsMandatory = true, GenderConstraint = null },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TamTai", IsMandatory = true, GenderConstraint = null },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "ThaiTue", IsMandatory = true, GenderConstraint = null },
 
-                new ActionRuleMapping { ActionId = "MUA_XE", RuleCode = "Rule_TamTai", IsMandatory = true, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "MUA_DAT", RuleCode = "Rule_TamTai", IsMandatory = true, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "NHAN_VIEC", RuleCode = "Rule_ThaiTue", IsMandatory = false, GenderConstraint = null }
+                new ActionRuleMapping { ActionId = "MUA_XE", RuleCode = "TamTai", IsMandatory = true, GenderConstraint = null },
+                new ActionRuleMapping { ActionId = "MUA_DAT", RuleCode = "TamTai", IsMandatory = true, GenderConstraint = null },
+                new ActionRuleMapping { ActionId = "NHAN_VIEC", RuleCode = "ThaiTue", IsMandatory = false, GenderConstraint = null }
 
             // 5. PHASE 2 - CÁC RULE LEVEL NGÀY (Sẽ nhét vào sau)
-            // new ActionRuleMapping { ActionId = "XUAT_HANH", RuleCode = "Rule_NgayXungTuoi", IsMandatory = true... }
-            // new ActionRuleMapping { ActionId = "AN_TANG", RuleCode = "Rule_NgayTrungTang", IsMandatory = true... }
+            // new ActionRuleMapping { ActionId = "XUAT_HANH", RuleCode = "NgayXungTuoi", IsMandatory = true... }
+            // new ActionRuleMapping { ActionId = "AN_TANG", RuleCode = "NgayTrungTang", IsMandatory = true... }
             );
         }
 
