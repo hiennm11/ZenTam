@@ -72,4 +72,12 @@ public interface ICanChiCalculator
     /// <param name="jdn">Julian Day Number</param>
     /// <returns>Index 0-27 into NhiThapBatTuNames array</returns>
     int GetNhiThapBatTu(int jdn);
+
+    /// <summary>
+    /// Gets Hoàng Đạo info for a given solar date.
+    /// Uses Can Chi of the day to determine good/bad hours.
+    /// </summary>
+    /// <param name="solarDate">Solar date</param>
+    /// <returns>HoangDaoInfo with IsHoangDao and hour lists</returns>
+    ZenTam.Api.Features.Calendars.Models.HoangDaoInfo GetHoangDao(DateTime solarDate);
 }

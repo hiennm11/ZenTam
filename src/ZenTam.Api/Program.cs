@@ -13,6 +13,8 @@ using ZenTam.Api.Features.ParseAndEvaluate.Queries;
 using ZenTam.Api.Infrastructure;
 using ZenTam.Api.Features.Clients.Commands;
 using ZenTam.Api.Features.Clients.Queries;
+using ZenTam.Api.Features.Calendars;
+using ZenTam.Api.Features.Calendars.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,10 @@ builder.Services.AddScoped<GetClientHandler>();
 builder.Services.AddScoped<AddRelatedPersonHandler>();
 builder.Services.AddScoped<DeleteRelatedPersonHandler>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateClientValidator>();
+
+// ── Day Context & Hoàng Đạo ───────────────────────────────────────────────────
+builder.Services.AddScoped<IDayContextService, DayContextService>();
+builder.Services.AddScoped<IHoangDaoService, HoangDaoService>();
 
 // ── Cache ─────────────────────────────────────────────────────────────────────
 string? redisConnectionString = builder.Configuration.GetConnectionString("Redis");
@@ -73,6 +79,7 @@ builder.Services.AddScoped<ParseAndEvaluateHandler>();
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 builder.Services.AddProblemDetails();
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -88,6 +95,7 @@ using (var scope = app.Services.CreateScope())
 app.UseExceptionHandler();
 app.MapOpenApi();
 app.MapScalarApiReference();
+app.MapControllers();
 
 EvaluateActionEndpoint.Map(app);
 ParseAndEvaluateEndpoint.Map(app);

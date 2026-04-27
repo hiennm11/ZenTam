@@ -185,4 +185,14 @@ public class CanChiCalculator(
     {
         return lunarCalculator.GetJulianDayNumber(solarDate.Year, solarDate.Month, solarDate.Day);
     }
+
+    /// <inheritdoc />
+    public ZenTam.Api.Features.Calendars.Models.HoangDaoInfo GetHoangDao(DateTime solarDate)
+    {
+        int jdn = GetJulianDayNumber(solarDate);
+        var canChi = GetCanChiNgay(jdn);
+        int canIndex = Array.IndexOf(Cans, canChi.Can);
+        int chiIndex = Array.IndexOf(Chis, canChi.Chi);
+        return ZenTam.Api.Features.Calendars.Data.HoangDaoLookup.GetHoangDao(canIndex, chiIndex);
+    }
 }
