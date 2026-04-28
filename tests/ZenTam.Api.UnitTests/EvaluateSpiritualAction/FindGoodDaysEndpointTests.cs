@@ -171,7 +171,7 @@ public class FindGoodDaysEndpointTests
         // Arrange
         var request = new FindGoodDaysRequest(
             ClientId: Guid.NewGuid(),
-            Action: ActionCode.KET_HON,
+            Action: ActionCode.CUOI_HOI,
             FromDate: new DateOnly(2026, 5, 1),
             ToDate: new DateOnly(2026, 5, 31),
             MaxResults: 3
@@ -185,7 +185,7 @@ public class FindGoodDaysEndpointTests
         };
 
         var expectedResponse = new FindGoodDaysResponse(
-            Action: ActionCode.KET_HON,
+            Action: ActionCode.CUOI_HOI,
             SearchRangeStart: new DateOnly(2026, 5, 1),
             SearchRangeEnd: new DateOnly(2026, 5, 31),
             TotalDaysScanned: 31,

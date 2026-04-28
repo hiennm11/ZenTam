@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Infrastructure.Entities;
 
 namespace ZenTam.Api.Infrastructure;
@@ -39,7 +40,9 @@ public class ZenTamDbContext : DbContext
             entity.Property(e => e.ActionId).IsRequired().HasMaxLength(50);
             entity.Property(e => e.RuleCode).IsRequired().HasMaxLength(50);
             entity.Property(e => e.IsMandatory).IsRequired();
-            entity.Property(e => e.GenderConstraint).IsRequired(false);
+            entity.Property(e => e.GenderScope).IsRequired();
+            entity.Property(e => e.Tier).IsRequired();
+            entity.Property(e => e.Priority).IsRequired();
             entity.HasOne<ActionCatalog>()
                   .WithMany()
                   .HasForeignKey(e => e.ActionId);

@@ -1,5 +1,7 @@
 using ZenTam.Api.Common.CanChi;
+using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Lunar;
+using ZenTam.Api.Common.Rules;
 using ZenTam.Api.Features.Calendars.Models;
 using ZenTam.Api.Features.Calendars.Services;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Data;
@@ -10,12 +12,14 @@ namespace ZenTam.Api.Features.EvaluateSpiritualAction.Services;
 public class DayScoreCalculator(
     IDayContextService dayContextService,
     ILunarCalculatorService lunarCalculator,
-    ICanChiCalculator canChiCalculator
+    ICanChiCalculator canChiCalculator,
+    ActionCodeMapper actionCodeMapper,
+    RuleResolver ruleResolver
 ) : IDayScoreCalculator
 {
     private const int MaxScore = 80;
 
-    public DayScoreResult Calculate(DateTime solarDate, ActionCode action, int? clientLunarYear = null)
+    public DayScoreResult Calculate(DateTime solarDate, ActionCode action, Gender userGender, RuleTier tier, int? clientLunarYear = null)
     {
         var dayContext = dayContextService.GetDayContext(solarDate);
         var lunar = lunarCalculator.Convert(solarDate);
@@ -105,6 +109,33 @@ public class DayScoreCalculator(
             reasons.Add("Thọ Tử");
         }
 
+        // 8. Evaluate rules via ActionCodeMapper (filtered by GenderScope and RuleTier)
+        var actionId = actionCodeMapper.ToString(action);
+        var ruleMappings = actionCodeMapper.GetRuleMappingsForAction(actionId, userGender, tier);
+        var resolvedRules = ruleResolver.Resolve(ruleMappings, userGender, tier);
+        
+        foreach (var item in resolvedRules)
+        {
+            var rule = item.Rule;
+            var isMandatory = item.IsMandatory;
+            var profile = new UserProfile
+            {
+                Gender = userGender,
+                LunarYOB = clientLunarYear ?? lunar.LunarYear,
+                TargetYear = solarDate.Year
+            };
+            var lunarContext = new LunarDateContext
+            {
+                LunarDay = lunar.LunarDay,
+                LunarMonth = lunar.LunarMonth,
+                IsLeap = lunar.IsLeap,
+                LunarYear = lunar.LunarYear
+            };
+            var result = rule.Evaluate(profile, lunarContext);
+            score += result.Score;
+            reasons.Add($"{rule.RuleCode}: {(result.IsPassed ? "Đạt" : "Không đạt")} ({result.Score:+0;-0}{result.Score})");
+        }
+
         return new DayScoreResult(
             SolarDate: solarDate,
             LunarDateText: $"{lunar.LunarDay}/{lunar.LunarMonth} {canChiCalculator.GetCanChiNam(lunar.LunarYear).Can} {canChiCalculator.GetCanChiNam(lunar.LunarYear).Chi}",
@@ -147,17 +178,30 @@ public class DayScoreCalculator(
     private static string GetActionName(ActionCode action) => action switch
     {
         ActionCode.NHAP_TRACH => "nhập trạch",
-        ActionCode.KET_HON => "kết hôn",
+        ActionCode.CUOI_HOI => "cưới hỏi",
         ActionCode.KHAI_TRUONG => "khai trương",
-        ActionCode.DONG_THO => "động thổ",
+        ActionCode.XAY_NHA => "xây nhà",
         ActionCode.KY_HOP_DONG => "ký hợp đồng",
         ActionCode.XUAT_HANH => "xuất hành",
         ActionCode.TU_TUC => "tự tứ",
-        ActionCode.CUA_HANG => "mở cửa hàng",
         ActionCode.AN_TANG => "an táng",
-        ActionCode.TAM_TRIEN => "tảo triển",
-        ActionCode.KHAI_NGHIEP => "khai nghiệp",
+        ActionCode.SINH_CON => "sinh con",
+        ActionCode.SUA_NHA => "sửa nhà",
+        ActionCode.NHAN_VIEC => "nhận việc",
+        ActionCode.MUA_VANG => "mua vàng",
+        ActionCode.MUA_DAT => "mua đất",
+        ActionCode.MUA_XE => "mua xe",
+        ActionCode.DAM_BAO_HANH => "bảo hành",
+        ActionCode.CU_HUONG => "về quê",
+        ActionCode.BAT_DAU => "bắt đầu",
         ActionCode.CHUA_BENH => "chữa bệnh",
+        ActionCode.TAM_SOAT => "tầm soát",
+        ActionCode.KHAI_VONG => "khai võng",
+        ActionCode.THI_DAU => "thi đấu",
+        ActionCode.BOC_MO => "bốc mộ",
+        ActionCode.THO_MAU => "thổ mộ",
+        ActionCode.LE_BAI => "lễ bái",
+        ActionCode.CAT_SAC => "cắt sắc",
         _ => action.ToString()
     };
 }

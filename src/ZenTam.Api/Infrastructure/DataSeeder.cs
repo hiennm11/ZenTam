@@ -32,62 +32,96 @@ public static class DataSeeder
         if (!db.ActionCatalog.Any())
         {
             db.ActionCatalog.AddRange(
-                // --- NHÓM GIA ĐẠO & ĐẠI SỰ ---
-                new ActionCatalog { Id = "XAY_NHA", Description = "Xây nhà mới, cất nóc, động thổ" },
-                new ActionCatalog { Id = "SUA_NHA", Description = "Sửa chữa, tu tạo nhà cửa" },
-                new ActionCatalog { Id = "NHAP_TRACH", Description = "Vào nhà mới, chuyển chỗ ở" },
-                new ActionCatalog { Id = "CUOI_HOI", Description = "Cưới vợ, gả chồng, kết hôn" },
-                new ActionCatalog { Id = "SINH_CON", Description = "Dự định sinh con đẻ cái" },
+                // --- GIA DINH ---
+                new ActionCatalog { Id = "XAY_NHA",      Description = "Xây nhà mới, cất nóc, động thổ" },
+                new ActionCatalog { Id = "SUA_NHA",      Description = "Sửa chữa, tu tạo nhà cửa" },
+                new ActionCatalog { Id = "NHAP_TRACH",   Description = "Vào nhà mới, chuyển chỗ ở" },
+                new ActionCatalog { Id = "CUOI_HOI",     Description = "Cưới vợ, gả chồng, kết hôn" },
+                new ActionCatalog { Id = "SINH_CON",     Description = "Dự định sinh con đẻ cái" },
 
-                // --- NHÓM SỰ NGHIỆP & TÀI LỘC ---
-                new ActionCatalog { Id = "KHAI_TRUONG", Description = "Khai trương cửa hàng, công ty" },
-                new ActionCatalog { Id = "KY_HOP_DONG", Description = "Ký kết giao dịch, hợp đồng lớn" },
-                new ActionCatalog { Id = "NHAN_VIEC", Description = "Nhận việc mới, nhậm chức, thăng chức" },
+                // --- NGHIEP_TAI ---
+                new ActionCatalog { Id = "KHAI_TRUONG",  Description = "Khai trương cửa hàng, công ty" },
+                new ActionCatalog { Id = "KY_HOP_DONG",  Description = "Ký kết giao dịch, hợp đồng lớn" },
+                new ActionCatalog { Id = "NHAN_VIEC",    Description = "Nhận việc mới, nhậm chức, thăng chức" },
+                new ActionCatalog { Id = "MUA_VANG",     Description = "Mua vàng, trang sức kim hoàn" },
+                new ActionCatalog { Id = "MUA_DAT",      Description = "Mua bán đất đai, bất động sản" },
+                new ActionCatalog { Id = "MUA_XE",       Description = "Mua xe máy, ô tô" },
+                new ActionCatalog { Id = "DAM_BAO_HANH", Description = "Đặt bảo hành, ký bảo lãnh" },
 
-                // --- NHÓM TÀI SẢN & DI CHUYỂN ---
-                new ActionCatalog { Id = "MUA_XE", Description = "Mua xe máy, ô tô" },
-                new ActionCatalog { Id = "MUA_DAT", Description = "Mua bán đất đai, bất động sản" },
-                new ActionCatalog { Id = "XUAT_HANH", Description = "Đi công tác xa, du học, xuất ngoại" },
+                // --- DI_CHUYEN ---
+                new ActionCatalog { Id = "XUAT_HANH",    Description = "Đi công tác xa, du học, xuất ngoại" },
+                new ActionCatalog { Id = "CU_HUONG",     Description = "Về quê, cứ hương, thăm viếng tổ tiên" },
+                new ActionCatalog { Id = "BAT_DAU",      Description = "Bắt đầu hành trình, khởi sự" },
 
-                // --- NHÓM ÂM PHẦN (Chuẩn bị sẵn cho Phase 2 - Level Ngày) ---
-                new ActionCatalog { Id = "AN_TANG", Description = "Chôn cất, viếng tang" },
-                new ActionCatalog { Id = "BOC_MO", Description = "Sang cát, tu tạo lăng mộ" }
+                // --- SUC_KHOE ---
+                new ActionCatalog { Id = "CHUA_BENH",    Description = "Chữa bệnh, khám chữa tại bệnh viện" },
+                new ActionCatalog { Id = "TAM_SOAT",     Description = "Tầm soát, kiểm tra sức khỏe định kỳ" },
+
+                // --- HOC_TAP ---
+                new ActionCatalog { Id = "KHAI_VONG",    Description = "Khai võng, khai giảng năm học mới" },
+                new ActionCatalog { Id = "THI_DAU",      Description = "Thi cử, tham gia cuộc thi" },
+
+                // --- AM_PHAN ---
+                new ActionCatalog { Id = "AN_TANG",      Description = "An táng, chôn cất" },
+                new ActionCatalog { Id = "BOC_MO",       Description = "Bốc mộ, sang cát, tu tạo lăng mộ" },
+                new ActionCatalog { Id = "THO_MAU",      Description = "Thổ mộ, tìm kiếm đất đặt mộ" },
+
+                // --- TAM_LINH ---
+                new ActionCatalog { Id = "LE_BAI",       Description = "Lễ bái, tảo mộ, cầu an" },
+                new ActionCatalog { Id = "CAT_SAC",      Description = "Cắt sắc, hóa giải, tẩy uế" },
+
+                // --- KHAC ---
+                new ActionCatalog { Id = "TU_TUC",       Description = "Tự tứ, thiền định, tu tâm" }
             );
         }
 
         if (!db.ActionRuleMappings.Any())
         {
             db.ActionRuleMappings.AddRange(
-                // 1. RULE CHO XÂY DỰNG (Áp tuổi Nam)
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "KimLau", IsMandatory = true, GenderConstraint = Gender.Male },
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = Gender.Male }, // Cảnh báo
-                new ActionRuleMapping { ActionId = "XAY_NHA", RuleCode = "ThaiTue", IsMandatory = false, GenderConstraint = Gender.Male },
+                // ============================================================
+                // YEAR TIER RULES (Tier = RuleTier.Year)
+                // ============================================================
+                // XAY_NHA Year rules (Both gender, Priority 1-3)
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "HoangOc",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 2 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "TamTai",   IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 3 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "ThaiTue",  IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 4 },
+                // CUOI_HOI Year rules (FemaleOnly + Both)
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "TamTai",   IsMandatory = false, GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 2 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "HoangOc",  IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 3 },
+                // KHAI_TRUONG Year rules
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",RuleCode = "TamTai",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",RuleCode = "ThaiTue",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 2 },
+                // SUA_NHA Year rule
+                new ActionRuleMapping { ActionId = "SUA_NHA",     RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                // NHAP_TRACH Year rule
+                new ActionRuleMapping { ActionId = "NHAP_TRACH",  RuleCode = "TamTai",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                // SINH_CON Year rule
+                new ActionRuleMapping { ActionId = "SINH_CON",    RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 1 },
+                // MUA_XE Year rule
+                new ActionRuleMapping { ActionId = "MUA_XE",      RuleCode = "TamTai",   IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                // MUA_DAT Year rule
+                new ActionRuleMapping { ActionId = "MUA_DAT",     RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                // NHAN_VIEC Year rule
+                new ActionRuleMapping { ActionId = "NHAN_VIEC",   RuleCode = "ThaiTue",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
 
-                new ActionRuleMapping { ActionId = "SUA_NHA", RuleCode = "HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
-                new ActionRuleMapping { ActionId = "SUA_NHA", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = Gender.Male },
-
-                new ActionRuleMapping { ActionId = "NHAP_TRACH", RuleCode = "HoangOc", IsMandatory = true, GenderConstraint = Gender.Male },
-
-                // 2. RULE CHO CƯỚI HỎI (Áp tuổi Nữ)
-                new ActionRuleMapping { ActionId = "CUOI_HOI", RuleCode = "KimLau", IsMandatory = true, GenderConstraint = Gender.Female },
-                new ActionRuleMapping { ActionId = "CUOI_HOI", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = Gender.Female },
-
-                // 3. RULE CHO SINH CON (Xem tuổi bố mẹ có kỵ Thái Tuế/Tam Tai năm đó không)
-                new ActionRuleMapping { ActionId = "SINH_CON", RuleCode = "ThaiTue", IsMandatory = false, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "SINH_CON", RuleCode = "TamTai", IsMandatory = false, GenderConstraint = null },
-
-                // 4. RULE CHO SỰ NGHIỆP & TÀI SẢN (Không phân biệt Nam/Nữ, kỵ Tam Tai & Thái Tuế)
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TamTai", IsMandatory = true, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "ThaiTue", IsMandatory = true, GenderConstraint = null },
-
-                new ActionRuleMapping { ActionId = "MUA_XE", RuleCode = "TamTai", IsMandatory = true, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "MUA_DAT", RuleCode = "TamTai", IsMandatory = true, GenderConstraint = null },
-                new ActionRuleMapping { ActionId = "NHAN_VIEC", RuleCode = "ThaiTue", IsMandatory = false, GenderConstraint = null }
-
-            // 5. PHASE 2 - CÁC RULE LEVEL NGÀY (Sẽ nhét vào sau)
-            // new ActionRuleMapping { ActionId = "XUAT_HANH", RuleCode = "NgayXungTuoi", IsMandatory = true... }
-            // new ActionRuleMapping { ActionId = "AN_TANG", RuleCode = "NgayTrungTang", IsMandatory = true... }
+                // ============================================================
+                // DAY TIER RULES (Tier = RuleTier.Day)
+                // ============================================================
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "NgayTrungTang", IsMandatory = true, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "TruongXau",    IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 3 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "DuongCongKy",  IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "HacDao",       IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TrucBinh",     IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 3 },
+                new ActionRuleMapping { ActionId = "MUA_VANG",    RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "MUA_VANG",    RuleCode = "HoangDao",     IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "CU_HUONG",     RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CHUA_BENH",   RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TruongXau",    IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 4 }
             );
         }
 

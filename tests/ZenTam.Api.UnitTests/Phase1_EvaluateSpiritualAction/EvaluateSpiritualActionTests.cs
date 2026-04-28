@@ -115,7 +115,7 @@ public class EvaluateSpiritualActionTests
             ActionId = "XAY_NHA",
             RuleCode = "KimLau",
             IsMandatory = true,
-            GenderConstraint = Gender.Male
+            GenderScope = GenderApplyScope.MaleOnly
         });
         context.ActionRuleMappings.Add(new ActionRuleMapping
         {
@@ -123,7 +123,7 @@ public class EvaluateSpiritualActionTests
             ActionId = "XAY_NHA",
             RuleCode = "HoangOc",
             IsMandatory = true,
-            GenderConstraint = Gender.Male
+            GenderScope = GenderApplyScope.MaleOnly
         });
         context.ActionRuleMappings.Add(new ActionRuleMapping
         {
@@ -131,7 +131,7 @@ public class EvaluateSpiritualActionTests
             ActionId = "XAY_NHA",
             RuleCode = "TamTai",
             IsMandatory = false,
-            GenderConstraint = null  // No gender constraint - applies to all genders
+            GenderScope = GenderApplyScope.Both
         });
 
         context.SaveChanges();

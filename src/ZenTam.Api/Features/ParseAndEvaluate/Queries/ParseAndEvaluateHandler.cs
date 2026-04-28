@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using ZenTam.Api.Common.Caching;
 using ZenTam.Api.Common.Exceptions;
 using ZenTam.Api.Common.Lunar;
+using ZenTam.Api.Features.EvaluateSpiritualAction.Models;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Queries;
+using ZenTam.Api.Features.EvaluateSpiritualAction.Services;
 using ZenTam.Api.Features.ParseAndEvaluate.Queries.IntentParsing;
 using ZenTam.Api.Infrastructure;
 using ZenTam.Api.Infrastructure.Entities;
@@ -22,6 +24,7 @@ public class ParseAndEvaluateHandler
     private readonly EvaluateActionHandler   _evaluateHandler;
     private readonly ILunarCalculatorService  _lunarCalculator;
     private readonly ZenTamDbContext         _dbContext;
+    private readonly ActionCodeMapper        _actionCodeMapper;
     private readonly ILogger<ParseAndEvaluateHandler> _logger;
 
     public ParseAndEvaluateHandler(
@@ -31,6 +34,7 @@ public class ParseAndEvaluateHandler
         EvaluateActionHandler  evaluateHandler,
         ILunarCalculatorService lunarCalculator,
         ZenTamDbContext        dbContext,
+        ActionCodeMapper      actionCodeMapper,
         ILogger<ParseAndEvaluateHandler> logger)
     {
         _regexParser     = regexParser;
@@ -39,6 +43,7 @@ public class ParseAndEvaluateHandler
         _evaluateHandler = evaluateHandler;
         _lunarCalculator = lunarCalculator;
         _dbContext       = dbContext;
+        _actionCodeMapper = actionCodeMapper;
         _logger          = logger;
     }
 
@@ -94,6 +99,19 @@ public class ParseAndEvaluateHandler
                         var intentCacheKey = ComputeIntentCacheKey(intent.ActionCode, lunarYear);
                         await TrySetCachedIntentAsync(intentCacheKey, intent, TimeSpan.FromHours(24), ct);
                     }
+                }
+            }
+        }
+
+        // Step 5b — Validate action codes using ActionCodeMapper
+        foreach (var intent in intents)
+        {
+            if (intent.ActionCode is not null)
+            {
+                var validatedCode = _actionCodeMapper.ToEnum(intent.ActionCode);
+                if (validatedCode == ActionCode.UNKNOWN)
+                {
+                    _logger.LogWarning("Unknown action code from parser: {ActionCode}", intent.ActionCode);
                 }
             }
         }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Lunar;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Models;
 using ZenTam.Api.Infrastructure;
@@ -16,8 +17,9 @@ public class FindGoodDaysService(
         CancellationToken ct = default)
     {
         int? subjectLunarYear = null;
+        Gender userGender = Gender.Male; // default
 
-        // Step 1: Load subject client's lunar year for xung tuổi check
+        // Step 1: Load subject client's lunar year for xung tuổi check and user's gender
         if (request.SubjectClientId.HasValue)
         {
             var subject = await db.ClientProfiles
@@ -30,14 +32,21 @@ public class FindGoodDaysService(
             }
         }
 
-        // Step 2: Iterate through date range
+        // Step 1b: Load client's gender for rule filtering
+        var client = await db.Users.FirstOrDefaultAsync(u => u.Id == request.ClientId, ct);
+        if (client != null)
+        {
+            userGender = client.Gender;
+        }
+
+        // Step 2: Iterate through date range (using Day tier for daily evaluation)
         var results = new List<DayScoreResult>();
         var current = request.FromDate.ToDateTime(TimeOnly.MinValue);
         var endDate = request.ToDate.ToDateTime(TimeOnly.MinValue);
 
         while (current <= endDate)
         {
-            var scoreResult = scoreCalculator.Calculate(current, request.Action, subjectLunarYear);
+            var scoreResult = scoreCalculator.Calculate(current, request.Action, userGender, RuleTier.Day, subjectLunarYear);
             results.Add(scoreResult);
             current = current.AddDays(1);
         }
@@ -63,8 +72,9 @@ public class FindGoodDaysService(
         [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
     {
         int? subjectLunarYear = null;
+        Gender userGender = Gender.Male; // default
 
-        // Step 1: Load subject client's lunar year for xung tuổi check
+        // Step 1: Load subject client's lunar year for xung tuổi check and user's gender
         if (request.SubjectClientId.HasValue)
         {
             var subject = await db.ClientProfiles
@@ -77,7 +87,14 @@ public class FindGoodDaysService(
             }
         }
 
-        // Step 2: Iterate through date range and yield each result
+        // Step 1b: Load client's gender for rule filtering
+        var client = await db.Users.FirstOrDefaultAsync(u => u.Id == request.ClientId, ct);
+        if (client != null)
+        {
+            userGender = client.Gender;
+        }
+
+        // Step 2: Iterate through date range and yield each result (using Day tier)
         var current = request.FromDate.ToDateTime(TimeOnly.MinValue);
         var endDate = request.ToDate.ToDateTime(TimeOnly.MinValue);
 
@@ -85,7 +102,7 @@ public class FindGoodDaysService(
         {
             ct.ThrowIfCancellationRequested();
 
-            var scoreResult = scoreCalculator.Calculate(current, request.Action, subjectLunarYear);
+            var scoreResult = scoreCalculator.Calculate(current, request.Action, userGender, RuleTier.Day, subjectLunarYear);
             yield return scoreResult;
 
             current = current.AddDays(1);

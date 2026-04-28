@@ -14,17 +14,31 @@ public class SLMIntentParser(IHttpClientFactory httpClientFactory, ILogger<SLMIn
         - Năm hiện tại (Năm nay): {CURRENT_YEAR}
 
         [TỪ ĐIỂN ACTION_CODE CHO PHÉP]
-        - XAY_NHA : Làm nhà, cất nhà, động thổ, xây dựng.
+        - XAY_NHA : Xây nhà, cất nhà, động thổ, xây dựng.
         - SUA_NHA : Sửa chữa, tu tạo nhà.
-        - NHAP_TRACH : Chuyển nhà, lên nhà mới.
+        - NHAP_TRACH : Vào nhà mới, chuyển nhà, lên nhà mới.
         - CUOI_HOI : Cưới vợ, gả chồng, kết hôn.
-        - SINH_CON : Đẻ con, có em bé.
+        - SINH_CON : Đẻ con, có em bé, sinh con.
         - KHAI_TRUONG : Mở cửa hàng, bắt đầu kinh doanh.
-        - MUA_XE : Mua ô tô, xe máy.
-        - MUA_DAT : Mua đất, mua nhà.
-        - XUAT_HANH : Đi xa, công tác, du học.
         - KY_HOP_DONG : Ký kết, giao dịch lớn.
-        - NHAN_VIEC : Chuyển việc, nhận chức.
+        - NHAN_VIEC : Chuyển việc, nhận chức, thăng chức.
+        - MUA_VANG : Mua vàng, trang sức kim hoàn.
+        - MUA_DAT : Mua đất, mua nhà, bất động sản.
+        - MUA_XE : Mua ô tô, xe máy.
+        - DAM_BAO_HANH : Đặt bảo hành, ký bảo lãnh.
+        - XUAT_HANH : Đi xa, công tác, du học, xuất ngoại.
+        - CU_HUONG : Về quê, cứ hương, thăm viếng tổ tiên.
+        - BAT_DAU : Bắt đầu hành trình, khởi sự.
+        - CHUA_BENH : Chữa bệnh, khám bệnh, đi bệnh viện.
+        - TAM_SOAT : Tầm soát, kiểm tra sức khỏe.
+        - KHAI_VONG : Khai võng, khai giảng năm học.
+        - THI_DAU : Thi cử, tham gia cuộc thi.
+        - AN_TANG : An táng, chôn cất.
+        - BOC_MO : Bốc mộ, sang cát, tu tạo lăng mộ.
+        - THO_MAU : Thổ mộ, tìm kiếm đất đặt mộ.
+        - LE_BAI : Lễ bái, tảo mộ, cầu an.
+        - CAT_SAC : Cắt sắc, hóa giải, tẩy uế.
+        - TU_TUC : Tự tứ, thiền định, tu tâm.
 
         [LUẬT TRÍCH XUẤT]
         1. Tuyệt đối chỉ trả về dữ liệu định dạng JSON, không giải thích, không thêm text thừa.

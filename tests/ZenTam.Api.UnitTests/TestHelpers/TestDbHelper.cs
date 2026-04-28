@@ -76,7 +76,7 @@ public static class TestDbHelper
             ActionId = "XAY_NHA",
             RuleCode = "KimLau",
             IsMandatory = true,
-            GenderConstraint = Gender.Male
+            GenderScope = GenderApplyScope.MaleOnly
         });
         context.ActionRuleMappings.Add(new ActionRuleMapping
         {
@@ -84,7 +84,7 @@ public static class TestDbHelper
             ActionId = "XAY_NHA",
             RuleCode = "HoangOc",
             IsMandatory = true,
-            GenderConstraint = Gender.Male
+            GenderScope = GenderApplyScope.MaleOnly
         });
         context.ActionRuleMappings.Add(new ActionRuleMapping
         {
@@ -92,7 +92,7 @@ public static class TestDbHelper
             ActionId = "XAY_NHA",
             RuleCode = "TamTai",
             IsMandatory = false,
-            GenderConstraint = Gender.Male
+            GenderScope = GenderApplyScope.MaleOnly
         });
         context.ActionRuleMappings.Add(new ActionRuleMapping
         {
@@ -100,7 +100,7 @@ public static class TestDbHelper
             ActionId = "XAY_NHA",
             RuleCode = "ThaiTue",
             IsMandatory = false,
-            GenderConstraint = Gender.Male
+            GenderScope = GenderApplyScope.MaleOnly
         });
 
         context.SaveChanges();

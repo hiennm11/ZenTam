@@ -1,12 +1,16 @@
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using ZenTam.Api.Common.CanChi;
 using ZenTam.Api.Common.CanChi.Models;
 using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Lunar;
+using ZenTam.Api.Common.Rules;
 using ZenTam.Api.Features.Calendars.Models;
 using ZenTam.Api.Features.Calendars.Services;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Models;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Services;
+using ZenTam.Api.Infrastructure;
+using ZenTam.Api.Infrastructure.Entities;
 
 using LunarDateContext = ZenTam.Api.Common.Domain.LunarDateContext;
 
@@ -21,18 +25,33 @@ public class DayScoreCalculatorTests
     private readonly Mock<IDayContextService> _mockDayContextService;
     private readonly Mock<ILunarCalculatorService> _mockLunarCalculator;
     private readonly Mock<ICanChiCalculator> _mockCanChiCalculator;
+    private readonly Mock<ActionCodeMapper> _mockActionCodeMapper;
+    private readonly Mock<RuleResolver> _mockRuleResolver;
     private readonly DayScoreCalculator _calculator;
+    private readonly ZenTamDbContext _db;
 
     public DayScoreCalculatorTests()
     {
         _mockDayContextService = new Mock<IDayContextService>();
         _mockLunarCalculator = new Mock<ILunarCalculatorService>();
         _mockCanChiCalculator = new Mock<ICanChiCalculator>();
+
+        // Setup in-memory DB for ActionCodeMapper
+        var options = new Microsoft.EntityFrameworkCore.DbContextOptionsBuilder<ZenTamDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        _db = new ZenTamDbContext(options);
+
+        // Use real ActionCodeMapper and RuleResolver (can't mock concrete classes with non-virtual methods)
+        var actionCodeMapper = new ActionCodeMapper(_db);
+        var ruleResolver = new RuleResolver(Array.Empty<ISpiritualRule>());
+
         _calculator = new DayScoreCalculator(
             _mockDayContextService.Object,
             _mockLunarCalculator.Object,
-            _mockCanChiCalculator.Object
-        );
+            _mockCanChiCalculator.Object,
+            actionCodeMapper,
+            ruleResolver);
     }
 
     [Fact]
@@ -66,7 +85,7 @@ public class DayScoreCalculatorTests
         _mockCanChiCalculator.Setup(x => x.GetCanChiNam(2026)).Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year);
 
         // Assert - verify score components
         // Thành (index 8) + NHAP_TRACH (index 0) = 20
@@ -110,7 +129,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var withHoang = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH);
+        var withHoang = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year);
 
         // Assert - Hoàng Đạo adds 6 points
         Assert.True(withHoang.Score >= 26);
@@ -134,7 +153,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year);
 
         // Assert - Sát Chủ means no +12 bonus
         Assert.True(result.IsSatChu);
@@ -157,7 +176,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year);
 
         // Assert - Thọ Tử means no +12 bonus
         Assert.True(result.IsThuTu);
@@ -183,7 +202,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year);
 
         // Assert - Ngày Kỵ means no +12 bonus
         Assert.True(result.IsNgayKy);
@@ -217,7 +236,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, clientLunarYear);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year, clientLunarYear);
 
         // Assert
         Assert.True(result.IsXungTuoi);
@@ -241,7 +260,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, clientLunarYear: null);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year, clientLunarYear: null);
 
         // Assert - no xung check performed
         Assert.False(result.IsXungTuoi);
@@ -268,7 +287,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year);
 
         // Assert
         Assert.Equal(tuIndex, result.TuIndex);
@@ -292,7 +311,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.KET_HON);
+        var result = _calculator.Calculate(solarDate, ActionCode.CUOI_HOI, Gender.Male, RuleTier.Year);
 
         // Assert - score should be very negative
         Assert.True(result.Score < 0);
@@ -316,7 +335,7 @@ public class DayScoreCalculatorTests
             .Returns(new CanChiYear("Bính", "Ngọ"));
 
         // Act
-        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH);
+        var result = _calculator.Calculate(solarDate, ActionCode.NHAP_TRACH, Gender.Male, RuleTier.Year);
 
         // Assert - all fields present
         Assert.Equal(solarDate, result.SolarDate);

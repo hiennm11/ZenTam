@@ -48,8 +48,8 @@ public class EvaluateActionHandler
         if (mappings.Count == 0)
             throw new NotFoundException($"Action '{request.ActionCode}' was not found.");
 
-        // Step c: Resolve rules (filtered by gender constraint)
-        var resolved = _ruleResolver.Resolve(mappings, user.Gender);
+        // Step c: Resolve rules (filtered by gender constraint and Year tier for yearly evaluation)
+        var resolved = _ruleResolver.Resolve(mappings, user.Gender, RuleTier.Year);
 
         // Step d: Build UserProfile
         var profile = new UserProfile

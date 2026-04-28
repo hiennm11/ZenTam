@@ -32,7 +32,7 @@ builder.Services.AddScoped<ILunarCalculatorService, AmLichCalculator>();
 // ── Solar Term Calculator ─────────────────────────────────────────────────────
 builder.Services.AddScoped<ISolarTermCalculator, SolarTermCalculator>();
 
-// ── Can Chi Calculator ───────────────────────────────────────────────────────
+// ── Can Chi Calculator ────────────────────────────────────────────────────────
 builder.Services.AddScoped<ICanChiCalculator, CanChiCalculator>();
 
 // ── Gánh Mệnh Service ────────────────────────────────────────────────────────
@@ -95,6 +95,9 @@ builder.Services.AddHttpClient("LiteLLM", c =>
 builder.Services.AddScoped<RegexIntentParser>();
 builder.Services.AddScoped<SLMIntentParser>();
 builder.Services.AddScoped<ParseAndEvaluateHandler>();
+
+// ── ActionCode Mapper for DB-Enum sync ───────────────────────────────────────
+builder.Services.AddScoped<ActionCodeMapper>();
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 builder.Services.AddProblemDetails();
