@@ -6,6 +6,7 @@ namespace ZenTam.Api.Infrastructure.Entities;
 public class ClientProfile
 {
     public Guid Id { get; set; }
+    public string Username { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public DateTime SolarDob { get; set; }

@@ -36,10 +36,10 @@ public class EvaluateActionHandler
         EvaluateActionRequest request,
         CancellationToken ct = default)
     {
-        // Step a: Load user
-        var user = await _db.Users.FindAsync(new object[] { request.UserId }, ct);
-        if (user is null)
-            throw new NotFoundException($"User with Id '{request.UserId}' was not found.");
+        // Step a: Load client
+        var client = await _db.ClientProfiles.FindAsync(new object[] { request.UserId }, ct);
+        if (client is null)
+            throw new NotFoundException($"Client with Id '{request.UserId}' was not found.");
 
         // Step b: Load mappings
         var mappings = await _db.ActionRuleMappings
@@ -49,18 +49,16 @@ public class EvaluateActionHandler
             throw new NotFoundException($"Action '{request.ActionCode}' was not found.");
 
         // Step c: Resolve rules (filtered by gender constraint and Year tier for yearly evaluation)
-        var resolved = _ruleResolver.Resolve(mappings, user.Gender, RuleTier.Year);
+        var resolved = _ruleResolver.Resolve(mappings, client.Gender, RuleTier.Year);
 
-        // Step d: Build UserProfile
+        // Step d: Get lunar context and build UserProfile
+        var lunarContext = _lunar.Convert(client.SolarDob);
         var profile = new UserProfile
         {
-            LunarYOB   = user.LunarYOB,
-            Gender     = user.Gender,
+            LunarYOB   = lunarContext.LunarYear,
+            Gender     = client.Gender,
             TargetYear = request.TargetYear
         };
-
-        // Step e: Get lunar context
-        var lunarContext = _lunar.Convert(user.SolarDOB);
 
         // Step f: Evaluate each rule and attach IsMandatory from mapping
         var results = new List<RuleResult>();

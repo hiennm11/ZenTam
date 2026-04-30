@@ -8,7 +8,6 @@ public class ZenTamDbContext : DbContext
 {
     public ZenTamDbContext(DbContextOptions<ZenTamDbContext> options) : base(options) { }
 
-    public DbSet<User>             Users             => Set<User>();
     public DbSet<ActionCatalog>    ActionCatalog     => Set<ActionCatalog>();
     public DbSet<ActionRuleMapping> ActionRuleMappings => Set<ActionRuleMapping>();
     public DbSet<ClientProfile>    ClientProfiles    => Set<ClientProfile>();
@@ -17,15 +16,6 @@ public class ZenTamDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Username).IsRequired().HasMaxLength(100);
-            entity.Property(e => e.Gender).IsRequired();
-            entity.Property(e => e.SolarDOB).IsRequired();
-            entity.Property(e => e.LunarYOB).IsRequired();
-        });
-
         modelBuilder.Entity<ActionCatalog>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -51,6 +41,7 @@ public class ZenTamDbContext : DbContext
         modelBuilder.Entity<ClientProfile>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Username).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(20);
             entity.Property(e => e.SolarDob).IsRequired();

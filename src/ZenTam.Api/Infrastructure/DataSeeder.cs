@@ -14,19 +14,88 @@ public static class DataSeeder
     /// </summary>
     public static async Task SeedAsync(ZenTamDbContext db)
     {
-        // 1. TẠO TEST USER (Giữ nguyên luồng của mày)
-        if (!db.Users.Any())
+        // 1. TẠO TEST CLIENT PROFILE "HIEN" VỚI 6 RELATED PERSONS
+        if (!db.ClientProfiles.Any())
         {
-            var testUserId = new Guid("3c7be808-02c1-4f24-85e1-26f0f2455675");
-            db.Users.Add(new User
+            var hienId = new Guid("3c7be808-02c1-4f24-85e1-26f0f2455675");
+            var hien = new ClientProfile
             {
-                Id = testUserId,
+                Id = hienId,
                 Username = "hien",
+                Name = "hien",
+                PhoneNumber = "",
+                SolarDob = new DateTime(1998, 4, 13, 0, 0, 0, DateTimeKind.Utc),
                 Gender = Gender.Male,
-                SolarDOB = new DateTime(1998, 4, 13, 0, 0, 0, DateTimeKind.Utc),
-                LunarYOB = 1998
-            });
-            Console.WriteLine($"Seeded test user: hien (Male - 1998)");
+                CreatedAt = DateTime.UtcNow
+            };
+
+            // Add 6 related persons
+            hien.RelatedPersons = new List<ClientRelatedPerson>
+            {
+                // dung - vợ (wife)
+                new ClientRelatedPerson
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = hienId,
+                    Label = "VỢ",
+                    SolarDob = new DateTime(1998, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                    Gender = Gender.Female,
+                    CreatedAt = DateTime.UtcNow
+                },
+                // quy - bố (father)
+                new ClientRelatedPerson
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = hienId,
+                    Label = "BỐ",
+                    SolarDob = new DateTime(1966, 9, 3, 0, 0, 0, DateTimeKind.Utc),
+                    Gender = Gender.Male,
+                    CreatedAt = DateTime.UtcNow
+                },
+                // huong - mẹ (mother)
+                new ClientRelatedPerson
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = hienId,
+                    Label = "MẸ",
+                    SolarDob = new DateTime(1975, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+                    Gender = Gender.Female,
+                    CreatedAt = DateTime.UtcNow
+                },
+                // hung - anh (older brother)
+                new ClientRelatedPerson
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = hienId,
+                    Label = "ANH",
+                    SolarDob = new DateTime(1993, 8, 26, 0, 0, 0, DateTimeKind.Utc),
+                    Gender = Gender.Male,
+                    CreatedAt = DateTime.UtcNow
+                },
+                // huyen - em gái (younger sister)
+                new ClientRelatedPerson
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = hienId,
+                    Label = "EM",
+                    SolarDob = new DateTime(2002, 10, 13, 0, 0, 0, DateTimeKind.Utc),
+                    Gender = Gender.Female,
+                    CreatedAt = DateTime.UtcNow
+                },
+                // huy - em trai (younger brother)
+                new ClientRelatedPerson
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = hienId,
+                    Label = "EM",
+                    SolarDob = new DateTime(2014, 11, 3, 0, 0, 0, DateTimeKind.Utc),
+                    Gender = Gender.Male,
+                    CreatedAt = DateTime.UtcNow
+                }
+            };
+
+            db.ClientProfiles.Add(hien);
+            Console.WriteLine($"Seeded test client: hien (Male - 1998) with 6 related persons");
         }
 
         if (!db.ActionCatalog.Any())

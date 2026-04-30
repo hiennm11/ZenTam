@@ -33,7 +33,7 @@ public class FindGoodDaysService(
         }
 
         // Step 1b: Load client's gender for rule filtering
-        var client = await db.Users.FirstOrDefaultAsync(u => u.Id == request.ClientId, ct);
+        var client = await db.ClientProfiles.FirstOrDefaultAsync(c => c.Id == request.ClientId, ct);
         if (client != null)
         {
             userGender = client.Gender;
@@ -88,7 +88,7 @@ public class FindGoodDaysService(
         }
 
         // Step 1b: Load client's gender for rule filtering
-        var client = await db.Users.FirstOrDefaultAsync(u => u.Id == request.ClientId, ct);
+        var client = await db.ClientProfiles.FirstOrDefaultAsync(c => c.Id == request.ClientId, ct);
         if (client != null)
         {
             userGender = client.Gender;
