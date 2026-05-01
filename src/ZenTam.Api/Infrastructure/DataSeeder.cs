@@ -176,6 +176,45 @@ public static class DataSeeder
                 new ActionRuleMapping { ActionId = "NHAN_VIEC",   RuleCode = "ThaiTue",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
 
                 // ============================================================
+                // MONTH TIER RULES (Tier = RuleTier.Month)
+                // ============================================================
+                // XAY_NHA Month rules - NguyetKy, TamNuong, XungTuoi, TamSatThang
+                // Mandatory rules (XungTuoi, TamSatThang) have priority 1-2, optional rules have 3-4
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "XUNG_TUOI",     IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 1 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "TAM_SAT_THANG", IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 2 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "NGUYET_KY",     IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 3 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "TAM_NUONG",     IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 4 },
+
+                // CUOI_HOI Month rules - Wedding is highly sensitive to monthly taboos
+                // All mandatory rules have priority 1-2, optional rule has priority 3
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "NGUYET_KY",     IsMandatory = true,  GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Month, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "XUNG_TUOI",     IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "TAM_SAT_THANG", IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 2 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "TAM_NUONG",     IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 3 },
+
+                // KHAI_TRUONG Month rules - Business opening
+                // Mandatory rules have priority 1-2, optional rules have priority 3-4
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "NGUYET_KY",     IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 1 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "XUNG_TUOI",     IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 2 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TAM_SAT_THANG", IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 3 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TAM_NUONG",     IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 4 },
+
+                // SUA_NHA Month rules
+                new ActionRuleMapping { ActionId = "SUA_NHA",     RuleCode = "TAM_SAT_THANG", IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 1 },
+
+                // NHAP_TRACH Month rules - Moving in
+                new ActionRuleMapping { ActionId = "NHAP_TRACH",  RuleCode = "XUNG_TUOI",     IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 1 },
+                new ActionRuleMapping { ActionId = "NHAP_TRACH",  RuleCode = "TAM_SAT_THANG", IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 2 },
+
+                // AN_TANG Month rules - Burial is extremely sensitive
+                // NGUYET_KY and TAM_NUONG are mandatory (critical taboo days that cannot be waived)
+                // XUNG_TUOI and TAM_SAT_THANG are optional (can be managed/waived)
+                new ActionRuleMapping { ActionId = "AN_TANG",     RuleCode = "NGUYET_KY",     IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 1 },
+                new ActionRuleMapping { ActionId = "AN_TANG",     RuleCode = "TAM_NUONG",     IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 1 },
+                new ActionRuleMapping { ActionId = "AN_TANG",     RuleCode = "XUNG_TUOI",     IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 2 },
+                new ActionRuleMapping { ActionId = "AN_TANG",     RuleCode = "TAM_SAT_THANG", IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Month, Priority = 2 },
+
+                // ============================================================
                 // DAY TIER RULES (Tier = RuleTier.Day)
                 // ============================================================
                 new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },

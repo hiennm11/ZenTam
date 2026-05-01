@@ -6,4 +6,5 @@ public class LunarDateContext
     public int  LunarMonth { get; init; }
     public int  LunarDay   { get; init; }
     public bool IsLeap     { get; init; }
+    public int  Jdn       { get; init; }
 }

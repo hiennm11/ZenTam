@@ -129,7 +129,8 @@ public class DayScoreCalculator(
                 LunarDay = lunar.LunarDay,
                 LunarMonth = lunar.LunarMonth,
                 IsLeap = lunar.IsLeap,
-                LunarYear = lunar.LunarYear
+                LunarYear = lunar.LunarYear,
+                Jdn = lunar.Jdn
             };
             var result = rule.Evaluate(profile, lunarContext);
             score += result.Score;

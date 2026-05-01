@@ -44,6 +44,11 @@ builder.Services.AddSingleton<ISpiritualRule, KimLauRule>();
 builder.Services.AddSingleton<ISpiritualRule, HoangOcRule>();
 builder.Services.AddSingleton<ISpiritualRule, TamTaiRule>();
 builder.Services.AddSingleton<ISpiritualRule, ThaiTueRule>();
+builder.Services.AddSingleton<ISpiritualRule, NguyetKyRule>();
+builder.Services.AddSingleton<ISpiritualRule, TamNuongRule>();
+builder.Services.AddSingleton<ISpiritualRule, XungTuoiRule>();
+builder.Services.AddSingleton<ISpiritualRule>(sp => 
+    new TamSatThangRule(sp.GetRequiredService<ICanChiCalculator>()));
 
 builder.Services.AddSingleton<IMonthlyRuleEngine, MonthlyRuleEngine>();
 

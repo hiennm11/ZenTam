@@ -39,12 +39,14 @@ public class AmLichCalculator : ILunarCalculatorService
     {
         var local = TimeZoneInfo.ConvertTime(solarDate, VietnamTimeZone);
         var (lunarDay, lunarMonth, lunarYear, isLeap) = Solar2Lunar(local);
+        var jdn = JulianDayNumber(local.Day, local.Month, local.Year);
         return new LunarDateContext
         {
             LunarDay   = lunarDay,
             LunarMonth = lunarMonth,
             LunarYear  = lunarYear,
-            IsLeap     = isLeap
+            IsLeap     = isLeap,
+            Jdn        = jdn
         };
     }
 

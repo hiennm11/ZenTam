@@ -54,13 +54,13 @@ public class ActionRuleMappingSeedTests : IDisposable
     }
 
     [Fact]
-    public void SeedData_TotalRowCount_Is28()
+    public void SeedData_TotalRowCount_Is47()
     {
         // Arrange & Act
         var totalCount = _db.ActionRuleMappings.Count();
 
-        // Assert - Total count
-        totalCount.Should().Be(28);
+        // Assert - Total count (15 Year + 19 Month + 13 Day = 47)
+        totalCount.Should().Be(47);
     }
 
     // ========== Tier Assignment Validation ==========
@@ -101,14 +101,14 @@ public class ActionRuleMappingSeedTests : IDisposable
     }
 
     [Fact]
-    public void SeedData_NoMappingsWithTierMonth()
+    public void SeedData_MonthTierRowCount_Is19()
     {
         // Arrange & Act
         var monthTierMappings = _db.ActionRuleMappings
             .Count(m => m.Tier == RuleTier.Month);
 
-        // Assert - No mappings should have Tier = Month in seed data
-        monthTierMappings.Should().Be(0);
+        // Assert - Month tier mappings count (XAY_NHA:4 + CUOI_HOI:4 + KHAI_TRUONG:4 + SUA_NHA:1 + NHAP_TRACH:2 + AN_TANG:4 = 19)
+        monthTierMappings.Should().Be(19);
     }
 
     // ========== GenderScope Validation ==========
