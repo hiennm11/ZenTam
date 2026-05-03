@@ -151,29 +151,29 @@ public static class DataSeeder
                 // YEAR TIER RULES (Tier = RuleTier.Year)
                 // ============================================================
                 // XAY_NHA Year rules (Both gender, Priority 1-3)
-                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
-                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "HoangOc",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 2 },
-                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "TamTai",   IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 3 },
-                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "ThaiTue",  IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 4 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "KIM_LAU",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "HOANG_OC",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 2 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "TAM_TAI",   IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 3 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "THAI_TUE",  IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 4 },
                 // CUOI_HOI Year rules (FemaleOnly + Both)
-                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 1 },
-                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "TamTai",   IsMandatory = false, GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 2 },
-                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "HoangOc",  IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 3 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "KIM_LAU",   IsMandatory = true,  GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "TAM_TAI",   IsMandatory = false, GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 2 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "HOANG_OC",  IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 3 },
                 // KHAI_TRUONG Year rules
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG",RuleCode = "TamTai",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG",RuleCode = "ThaiTue",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 2 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",RuleCode = "TAM_TAI",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",RuleCode = "THAI_TUE",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 2 },
                 // SUA_NHA Year rule
-                new ActionRuleMapping { ActionId = "SUA_NHA",     RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "SUA_NHA",     RuleCode = "KIM_LAU",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
                 // NHAP_TRACH Year rule
-                new ActionRuleMapping { ActionId = "NHAP_TRACH",  RuleCode = "TamTai",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "NHAP_TRACH",  RuleCode = "TAM_TAI",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
                 // SINH_CON Year rule
-                new ActionRuleMapping { ActionId = "SINH_CON",    RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "SINH_CON",    RuleCode = "KIM_LAU",   IsMandatory = true,  GenderScope = GenderApplyScope.FemaleOnly, Tier = RuleTier.Year, Priority = 1 },
                 // MUA_XE Year rule
-                new ActionRuleMapping { ActionId = "MUA_XE",      RuleCode = "TamTai",   IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "MUA_XE",      RuleCode = "TAM_TAI",   IsMandatory = false, GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
                 // MUA_DAT Year rule
-                new ActionRuleMapping { ActionId = "MUA_DAT",     RuleCode = "KimLau",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "MUA_DAT",     RuleCode = "KIM_LAU",   IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
                 // NHAN_VIEC Year rule
-                new ActionRuleMapping { ActionId = "NHAN_VIEC",   RuleCode = "ThaiTue",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
+                new ActionRuleMapping { ActionId = "NHAN_VIEC",   RuleCode = "THAI_TUE",  IsMandatory = true,  GenderScope = GenderApplyScope.Both,       Tier = RuleTier.Year, Priority = 1 },
 
                 // ============================================================
                 // MONTH TIER RULES (Tier = RuleTier.Month)
@@ -217,19 +217,19 @@ public static class DataSeeder
                 // ============================================================
                 // DAY TIER RULES (Tier = RuleTier.Day)
                 // ============================================================
-                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
-                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "NgayTrungTang", IsMandatory = true, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
-                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "TruongXau",    IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 3 },
-                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
-                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "DuongCongKy",  IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "HacDao",       IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TrucBinh",     IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 3 },
-                new ActionRuleMapping { ActionId = "MUA_VANG",    RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
-                new ActionRuleMapping { ActionId = "MUA_VANG",    RuleCode = "HoangDao",     IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
-                new ActionRuleMapping { ActionId = "CU_HUONG",     RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
-                new ActionRuleMapping { ActionId = "CHUA_BENH",   RuleCode = "XungTuoiNgay", IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
-                new ActionRuleMapping { ActionId = "KHAI_TRUONG", RuleCode = "TruongXau",    IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 4 }
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "SAT_CHU",        IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "THU_TU",         IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "XAY_NHA",     RuleCode = "THAP_NHI_TRUC",   IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 3 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "SAT_CHU",        IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CUOI_HOI",    RuleCode = "THU_TU",          IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",  RuleCode = "SAT_CHU",        IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",  RuleCode = "THAP_NHI_TRUC",  IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",  RuleCode = "HOANG_DAO_GIO",   IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 3 },
+                new ActionRuleMapping { ActionId = "MUA_VANG",     RuleCode = "SAT_CHU",        IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "MUA_VANG",     RuleCode = "HOANG_DAO_GIO",   IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 2 },
+                new ActionRuleMapping { ActionId = "CU_HUONG",      RuleCode = "SAT_CHU",        IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "CHUA_BENH",    RuleCode = "SAT_CHU",        IsMandatory = true,  GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 1 },
+                new ActionRuleMapping { ActionId = "KHAI_TRUONG",  RuleCode = "THAP_NHI_TRUC",  IsMandatory = false, GenderScope = GenderApplyScope.Both, Tier = RuleTier.Day, Priority = 4 }
             );
         }
 

@@ -2,6 +2,7 @@ using ZenTam.Api.Common.CanChi;
 using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Lunar;
 using ZenTam.Api.Common.Rules;
+using ZenTam.Api.Common.Rules.Models;
 using ZenTam.Api.Features.Calendars.Models;
 using ZenTam.Api.Features.Calendars.Services;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Data;
@@ -132,9 +133,14 @@ public class DayScoreCalculator(
                 LunarYear = lunar.LunarYear,
                 Jdn = lunar.Jdn
             };
-            var result = rule.Evaluate(profile, lunarContext);
-            score += result.Score;
-            reasons.Add($"{rule.RuleCode}: {(result.IsPassed ? "Đạt" : "Không đạt")} ({result.Score:+0;-0}{result.Score})");
+            var context = new RuleContext
+            {
+                Profile = profile,
+                Lunar = lunarContext
+            };
+            var result = rule.Evaluate(context);
+            score += result.ScoreImpact;
+            reasons.Add($"{rule.RuleCode}: {(result.IsPassed ? "Đạt" : "Không đạt")} ({result.ScoreImpact:+0;-0}{result.ScoreImpact})");
         }
 
         return new DayScoreResult(

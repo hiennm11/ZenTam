@@ -1,9 +1,13 @@
-using ZenTam.Api.Common.Domain;
-
 namespace ZenTam.Api.Common.Rules;
 
+using Models;
+
+/// <summary>
+/// Unified spiritual rule interface for all lunar taboo evaluations.
+/// All rules must implement this interface.
+/// </summary>
 public interface ISpiritualRule
 {
     string RuleCode { get; }
-    RuleResult Evaluate(UserProfile profile, LunarDateContext context);
+    RuleEvaluation Evaluate(RuleContext context);
 }

@@ -19,6 +19,7 @@ using ZenTam.Api.Features.Clients.Queries;
 using ZenTam.Api.Features.Calendars;
 using ZenTam.Api.Features.Calendars.Services;
 using ZenTam.Api.Domain.Rules.MonthlyRuleEngine;
+using ZenTam.Api.Domain.Rules.MonthlyRuleEngine.Rules;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,17 +41,23 @@ builder.Services.AddScoped<IGanhMenhService, GanhMenhService>();
 
 // ── Rule engine ───────────────────────────────────────────────────────────────
 builder.Services.AddScoped<RuleResolver>();
-builder.Services.AddSingleton<ISpiritualRule, KimLauRule>();
-builder.Services.AddSingleton<ISpiritualRule, HoangOcRule>();
-builder.Services.AddSingleton<ISpiritualRule, TamTaiRule>();
-builder.Services.AddSingleton<ISpiritualRule, ThaiTueRule>();
-builder.Services.AddSingleton<ISpiritualRule, NguyetKyRule>();
-builder.Services.AddSingleton<ISpiritualRule, TamNuongRule>();
-builder.Services.AddSingleton<ISpiritualRule, XungTuoiRule>();
-builder.Services.AddSingleton<ISpiritualRule>(sp => 
-    new TamSatThangRule(sp.GetRequiredService<ICanChiCalculator>()));
+builder.Services.AddSingleton<ISpiritualRule, NguyetKyRuleV2>();
+builder.Services.AddSingleton<ISpiritualRule, TamNuongRuleV2>();
+builder.Services.AddSingleton<ISpiritualRule, XungTuoiRuleV2>();
+builder.Services.AddSingleton<ISpiritualRule>(sp =>
+    new SatChuRuleV2());
 
-builder.Services.AddSingleton<IMonthlyRuleEngine, MonthlyRuleEngine>();
+builder.Services.AddSingleton<IMonthlyRuleEngine>(sp =>
+{
+    var nguyetKy = sp.GetRequiredService<NguyetKyRuleV2>();
+    var tamNuong = sp.GetRequiredService<TamNuongRuleV2>();
+    var xungTuoi = sp.GetRequiredService<XungTuoiRuleV2>();
+    var satChu = sp.GetRequiredService<SatChuRuleV2>();
+    var duongCongKy = new DuongCongKyRuleV2(
+        sp.GetRequiredService<ILunarCalculatorService>(),
+        sp.GetRequiredService<ICanChiCalculator>());
+    return new MonthlyRuleEngine(new ISpiritualRule[] { nguyetKy, tamNuong, xungTuoi, satChu, duongCongKy });
+});
 
 // ── Feature handlers ──────────────────────────────────────────────────────────
 builder.Services.AddScoped<EvaluateActionHandler>();
@@ -59,6 +66,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<EvaluateActionValidator>();
 // ── FindGoodDays services ───────────────────────────────────────────────────
 builder.Services.AddScoped<IDayScoreCalculator, DayScoreCalculator>();
 builder.Services.AddScoped<IFindGoodDaysService, FindGoodDaysService>();
+
+// ── Day-tier evaluation ──────────────────────────────────────────────────────
+builder.Services.AddScoped<EvaluateActionDailyHandler>();
+builder.Services.AddScoped<IValidator<EvaluateActionDailyRequest>, EvaluateActionDailyValidator>();
 
 // ── Client feature handlers ──────────────────────────────────────────────────
 builder.Services.AddScoped<CreateClientHandler>();
@@ -126,6 +137,7 @@ app.MapControllers();
 
 FindGoodDaysEndpoint.MapFindGoodDays(app);
 EvaluateActionEndpoint.Map(app);
+EvaluateActionDailyEndpoint.Map(app);
 ParseAndEvaluateEndpoint.Map(app);
 
 // ── Client CRUD endpoints ────────────────────────────────────────────────────

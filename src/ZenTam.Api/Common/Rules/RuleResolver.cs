@@ -1,7 +1,8 @@
-using ZenTam.Api.Common.Domain;
-using ZenTam.Api.Infrastructure.Entities;
-
 namespace ZenTam.Api.Common.Rules;
+
+using Common.Domain;
+using Common.Rules.Models;
+using Infrastructure.Entities;
 
 public class RuleResolver
 {
@@ -11,39 +12,25 @@ public class RuleResolver
         => _registry = rules.ToDictionary(r => r.RuleCode);
 
     /// <summary>
-    /// Returns only the rules applicable given the user's gender and tier.
-    /// A mapping with GenderScope == Both applies to all genders.
-    /// Tier must match requestedTier or be All.
+    /// Resolve rule instances for the given action-rule mappings and user profile.
+    /// Returns an immutable list of (Rule, IsMandatory) pairs.
     /// </summary>
     public IReadOnlyList<(ISpiritualRule Rule, bool IsMandatory)> Resolve(
         IEnumerable<ActionRuleMapping> mappings,
-        Gender userGender,
-        RuleTier requestedTier)
+        Gender gender,
+        RuleTier tier)
     {
+        var targetScope = gender == Gender.Male ? GenderApplyScope.MaleOnly : GenderApplyScope.FemaleOnly;
         return mappings
-            .Where(m => m.GenderScope == GenderApplyScope.Both 
-                     || (m.GenderScope == GenderApplyScope.MaleOnly && userGender == Gender.Male)
-                     || (m.GenderScope == GenderApplyScope.FemaleOnly && userGender == Gender.Female))
-            .Where(m => m.Tier == requestedTier || m.Tier == RuleTier.All)
-            .Where(m => _registry.ContainsKey(m.RuleCode))
-            .Select(m => (_registry[m.RuleCode], m.IsMandatory))
-            .ToList();
-    }
-
-    /// <summary>
-    /// Returns only the rules applicable given the user's gender.
-    /// A mapping with GenderScope == Both applies to all genders.
-    /// </summary>
-    public IReadOnlyList<(ISpiritualRule Rule, bool IsMandatory)> ResolveLegacy(
-        IEnumerable<ActionRuleMapping> mappings,
-        Gender userGender)
-    {
-        return mappings
-            .Where(m => m.GenderScope == GenderApplyScope.Both 
-                     || (m.GenderScope == GenderApplyScope.MaleOnly && userGender == Gender.Male)
-                     || (m.GenderScope == GenderApplyScope.FemaleOnly && userGender == Gender.Female))
-            .Where(m => _registry.ContainsKey(m.RuleCode))
-            .Select(m => (_registry[m.RuleCode], m.IsMandatory))
+            .Where(m => m.GenderScope == GenderApplyScope.Both || m.GenderScope == targetScope)
+            .Where(m => m.Tier == RuleTier.All || m.Tier == tier)
+            .Select(m =>
+            {
+                var rule = _registry.GetValueOrDefault(m.RuleCode);
+                return (Rule: rule, IsMandatory: m.IsMandatory);
+            })
+            .Where(x => x.Rule != null)
+            .Select(x => (x.Rule!, x.IsMandatory))
             .ToList();
     }
 }

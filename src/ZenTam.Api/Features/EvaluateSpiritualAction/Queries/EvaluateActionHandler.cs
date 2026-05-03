@@ -5,6 +5,7 @@ using ZenTam.Api.Common.Domain;
 using ZenTam.Api.Common.Exceptions;
 using ZenTam.Api.Common.Lunar;
 using ZenTam.Api.Common.Rules;
+using ZenTam.Api.Common.Rules.Models;
 using ZenTam.Api.Domain.Services;
 using ZenTam.Api.Infrastructure;
 
@@ -64,13 +65,14 @@ public class EvaluateActionHandler
         var results = new List<RuleResult>();
         foreach (var (rule, isMandatory) in resolved)
         {
-            var result = rule.Evaluate(profile, lunarContext);
+            var context = new RuleContext { Profile = profile, Lunar = lunarContext };
+            var result = rule.Evaluate(context);
             results.Add(new RuleResult
             {
-                RuleName    = result.RuleName,
+                RuleName    = result.RuleCode,
                 IsPassed    = result.IsPassed,
                 IsMandatory = isMandatory,
-                Score       = result.Score,
+                Score       = result.ScoreImpact,
                 Message     = result.Message
             });
         }

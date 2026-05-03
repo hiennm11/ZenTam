@@ -212,7 +212,7 @@ public class ActionRuleMappingSeedTests : IDisposable
     {
         // Arrange & Act - per contract: KimLau for CUOI_HOI is FemaleOnly
         var mapping = _db.ActionRuleMappings
-            .FirstOrDefault(m => m.ActionId == "CUOI_HOI" && m.RuleCode == "KimLau");
+            .FirstOrDefault(m => m.ActionId == "CUOI_HOI" && m.RuleCode == "KIM_LAU");
 
         // Assert
         mapping.Should().NotBeNull("KimLau mapping for CUOI_HOI should exist");
@@ -224,7 +224,7 @@ public class ActionRuleMappingSeedTests : IDisposable
     {
         // Arrange & Act - per contract: TamTai for KHAI_TRUONG is Both and mandatory
         var mapping = _db.ActionRuleMappings
-            .FirstOrDefault(m => m.ActionId == "KHAI_TRUONG" && m.RuleCode == "TamTai");
+            .FirstOrDefault(m => m.ActionId == "KHAI_TRUONG" && m.RuleCode == "TAM_TAI");
 
         // Assert
         mapping.Should().NotBeNull("TamTai mapping for KHAI_TRUONG should exist");
@@ -243,10 +243,10 @@ public class ActionRuleMappingSeedTests : IDisposable
 
         // Assert - XAY_NHA Year tier has 4 rules
         xayNhaYearRules.Should().HaveCount(4);
-        xayNhaYearRules.Should().Contain("KimLau");
-        xayNhaYearRules.Should().Contain("HoangOc");
-        xayNhaYearRules.Should().Contain("TamTai");
-        xayNhaYearRules.Should().Contain("ThaiTue");
+        xayNhaYearRules.Should().Contain("KIM_LAU");
+        xayNhaYearRules.Should().Contain("HOANG_OC");
+        xayNhaYearRules.Should().Contain("TAM_TAI");
+        xayNhaYearRules.Should().Contain("THAI_TUE");
     }
 
     [Fact]
@@ -260,9 +260,9 @@ public class ActionRuleMappingSeedTests : IDisposable
 
         // Assert - CUOI_HOI Year tier has 3 rules
         cuoiHoiYearRules.Should().HaveCount(3);
-        cuoiHoiYearRules.Should().Contain("KimLau");
-        cuoiHoiYearRules.Should().Contain("TamTai");
-        cuoiHoiYearRules.Should().Contain("HoangOc");
+        cuoiHoiYearRules.Should().Contain("KIM_LAU");
+        cuoiHoiYearRules.Should().Contain("TAM_TAI");
+        cuoiHoiYearRules.Should().Contain("HOANG_OC");
     }
 
     [Fact]
@@ -276,8 +276,8 @@ public class ActionRuleMappingSeedTests : IDisposable
 
         // Assert - KHAI_TRUONG Year tier has 2 rules
         khaiTruongYearRules.Should().HaveCount(2);
-        khaiTruongYearRules.Should().Contain("TamTai");
-        khaiTruongYearRules.Should().Contain("ThaiTue");
+        khaiTruongYearRules.Should().Contain("TAM_TAI");
+        khaiTruongYearRules.Should().Contain("THAI_TUE");
     }
 
     [Fact]
@@ -291,10 +291,9 @@ public class ActionRuleMappingSeedTests : IDisposable
 
         // Assert - KHAI_TRUONG Day tier has 4 rules
         khaiTruongDayRules.Should().HaveCount(4);
-        khaiTruongDayRules.Should().Contain("XungTuoiNgay");
-        khaiTruongDayRules.Should().Contain("HacDao");
-        khaiTruongDayRules.Should().Contain("TrucBinh");
-        khaiTruongDayRules.Should().Contain("TruongXau");
+        khaiTruongDayRules.Should().Contain("SAT_CHU");
+        khaiTruongDayRules.Should().Contain("THAP_NHI_TRUC");
+        khaiTruongDayRules.Should().Contain("HOANG_DAO_GIO");
     }
 
     [Fact]
@@ -308,8 +307,8 @@ public class ActionRuleMappingSeedTests : IDisposable
 
         // Assert - MUA_VANG Day tier has 2 rules
         muaVangDayRules.Should().HaveCount(2);
-        muaVangDayRules.Should().Contain("XungTuoiNgay");
-        muaVangDayRules.Should().Contain("HoangDao");
+        muaVangDayRules.Should().Contain("SAT_CHU");
+        muaVangDayRules.Should().Contain("HOANG_DAO_GIO");
     }
 
     [Fact]
@@ -334,6 +333,6 @@ public class ActionRuleMappingSeedTests : IDisposable
             .ToList();
 
         // Assert
-        nhanViecYearRules.Should().Contain("ThaiTue");
+        nhanViecYearRules.Should().Contain("THAI_TUE");
     }
 }
