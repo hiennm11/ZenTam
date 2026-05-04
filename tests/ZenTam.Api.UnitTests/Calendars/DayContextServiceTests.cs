@@ -133,7 +133,7 @@ public class DayContextServiceTests
 
         // Assert
         Assert.Equal(0, result.Index);
-        Assert.Equal("Côn", result.Name);
+        Assert.Equal("Giác Mộc Giao", result.Name);
         Assert.Equal(TuClassification.Kiettu, result.Classification);
     }
 
@@ -152,7 +152,7 @@ public class DayContextServiceTests
 
         // Assert
         Assert.Equal(12, result.Index);
-        Assert.Equal("Mão", result.Name);
+        Assert.Equal("Thất Hỏa Trư", result.Name);
         Assert.Equal(TuClassification.Hungtu, result.Classification);
     }
 
@@ -171,7 +171,7 @@ public class DayContextServiceTests
 
         // Assert
         Assert.Equal(23, result.Index);
-        Assert.Equal("Quân", result.Name);
+        Assert.Equal("Liễu Thổ Chương", result.Name);
         Assert.Equal(TuClassification.Binhtu, result.Classification);
     }
 

@@ -26,8 +26,8 @@ public static class ThapNhiTrucLookup
 
     private static readonly string[] TrucNames =
     [
-        "Kiến", "Trừ", "Mãn", "Bình", "Định", "Chấp",
-        "Phá", "Nguy", "Thành", "Thu", "Khai", "Bế"
+        "Trực Kiến", "Trực Trừ", "Trực Mãn", "Trực Bình", "Trực Định", "Trực Chấp",
+        "Trực Phá", "Trực Nguy", "Trực Thành", "Trực Thu", "Trực Khai", "Trực Bế"
     ];
 
     public static int GetTrucIndex(int chiIndex, int solarMonth)

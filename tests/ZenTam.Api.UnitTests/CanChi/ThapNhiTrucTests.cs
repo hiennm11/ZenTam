@@ -52,18 +52,19 @@ public class ThapNhiTrucTests
     [Fact]
     public void GetTrucName_All12Names_Covered()
     {
-        _calculator.GetTrucName(0).Should().Be("Kiến");
-        _calculator.GetTrucName(1).Should().Be("Trừ");
-        _calculator.GetTrucName(2).Should().Be("Mãn");
-        _calculator.GetTrucName(3).Should().Be("Bình");
-        _calculator.GetTrucName(4).Should().Be("Định");
-        _calculator.GetTrucName(5).Should().Be("Chấp");
-        _calculator.GetTrucName(6).Should().Be("Phá");
-        _calculator.GetTrucName(7).Should().Be("Nguy");
-        _calculator.GetTrucName(8).Should().Be("Thành");
-        _calculator.GetTrucName(9).Should().Be("Thu");
-        _calculator.GetTrucName(10).Should().Be("Khai");
-        _calculator.GetTrucName(11).Should().Be("Bế");
+        // Updated: All names now use "Trực X" format per Ngọc Hạp Thông Thư
+        _calculator.GetTrucName(0).Should().Be("Trực Kiến");
+        _calculator.GetTrucName(1).Should().Be("Trực Trừ");
+        _calculator.GetTrucName(2).Should().Be("Trực Mãn");
+        _calculator.GetTrucName(3).Should().Be("Trực Bình");
+        _calculator.GetTrucName(4).Should().Be("Trực Định");
+        _calculator.GetTrucName(5).Should().Be("Trực Chấp");
+        _calculator.GetTrucName(6).Should().Be("Trực Phá");
+        _calculator.GetTrucName(7).Should().Be("Trực Nguy");
+        _calculator.GetTrucName(8).Should().Be("Trực Thành");
+        _calculator.GetTrucName(9).Should().Be("Trực Thu");
+        _calculator.GetTrucName(10).Should().Be("Trực Khai");
+        _calculator.GetTrucName(11).Should().Be("Trực Bế");
     }
 
     [Fact]

@@ -49,12 +49,14 @@ public class CanChiCalculator(
         ("Canh", "Thân"), ("Tân", "Dậu"), ("Nhâm", "Tuất"), ("Quý", "Hợi")
     ];
 
-    // Nhị Thập Bát Tú names (28 values)
+    // Nhị Thập Bát Tú names (28 values) - Official names from Ngọc Hạp Thông Thư
     private static readonly string[] NhiThapBatTuNames =
     [
-        "Côn", "Đẩu", "Nữ", "Bộc", "Tham", "Chu", "Xà", "Tinh", "Trương", "Dực",
-        "Chẩn", "Vĩ", "Mão", "Tất", "Mão", "Chu", "Sâm", "Tỉ", "Thư", "Vị",
-        "Trủy", "Nguy", "Dương", "Quân", "Lâu", "Vệ", "Cư", "Mỹ"
+        "Giác Mộc Giao", "Cang Kim Long", "Đê Thổ Lạc", "Phòng Nhựt Thố", "Tâm Nguyệt Hồ", "Vĩ Hỏa Hổ",
+        "Cơ Thủy Báo", "Đẩu Mộc Giải", "Ngưu Kim Ngưu", "Nữ Thổ Bức", "Hư Nhựt Thử", "Nguy Nguyệt Yến",
+        "Thất Hỏa Trư", "Bích Thủy Du", "Khuê Mộc Lang", "Lâu Kim Cẩu", "Vị Thổ Trĩ", "Mão Nhựt Kê",
+        "Tất Nguyệt Ô", "Chủy Hỏa Hầu", "Sâm Thủy Viên", "Tỉnh Mộc Rái", "Quỷ Kim Dương", "Liễu Thổ Chương",
+        "Tinh Nhựt Mã", "Trương Nguyệt Lộc", "Dực Hỏa Xà", "Chẩn Thủy Dẫn"
     ];
 
     // Can-dependent month Can table (month 1 = index 0)
