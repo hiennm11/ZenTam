@@ -12,7 +12,9 @@ using ZenTam.Api.Common.Rules;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Queries;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Services;
 using ZenTam.Api.Features.EvaluateSpiritualAction.Rules;
+using ZenTam.Api.Features.EvaluateSpiritualAction.Handlers;
 using ZenTam.Api.Features.ParseAndEvaluate.Queries;
+using EvaluateSpiritualActionEndpoints = ZenTam.Api.Features.EvaluateSpiritualAction.Endpoints;
 using ZenTam.Api.Infrastructure;
 using ZenTam.Api.Features.Clients.Commands;
 using ZenTam.Api.Features.Clients.Queries;
@@ -41,11 +43,21 @@ builder.Services.AddScoped<IGanhMenhService, GanhMenhService>();
 
 // ── Rule engine ───────────────────────────────────────────────────────────────
 builder.Services.AddScoped<RuleResolver>();
-builder.Services.AddSingleton<ISpiritualRule, NguyetKyRuleV2>();
-builder.Services.AddSingleton<ISpiritualRule, TamNuongRuleV2>();
-builder.Services.AddSingleton<ISpiritualRule, XungTuoiRuleV2>();
-builder.Services.AddSingleton<ISpiritualRule>(sp =>
-    new SatChuRuleV2());
+builder.Services.AddScoped<RuleResolverV2>();
+
+// Register each rule as both ISpiritualRule AND its concrete type
+// so MonthlyRuleEngine can resolve them directly by type
+builder.Services.AddSingleton<ISpiritualRule>(sp => new NguyetKyRuleV2());
+builder.Services.AddSingleton<NguyetKyRuleV2>(sp => sp.GetRequiredService<IEnumerable<ISpiritualRule>>().OfType<NguyetKyRuleV2>().First());
+
+builder.Services.AddSingleton<ISpiritualRule>(sp => new TamNuongRuleV2());
+builder.Services.AddSingleton<TamNuongRuleV2>(sp => sp.GetRequiredService<IEnumerable<ISpiritualRule>>().OfType<TamNuongRuleV2>().First());
+
+builder.Services.AddSingleton<ISpiritualRule>(sp => new XungTuoiRuleV2());
+builder.Services.AddSingleton<XungTuoiRuleV2>(sp => sp.GetRequiredService<IEnumerable<ISpiritualRule>>().OfType<XungTuoiRuleV2>().First());
+
+builder.Services.AddSingleton<ISpiritualRule>(sp => new SatChuRuleV2());
+builder.Services.AddSingleton<SatChuRuleV2>(sp => sp.GetRequiredService<IEnumerable<ISpiritualRule>>().OfType<SatChuRuleV2>().First());
 
 builder.Services.AddSingleton<IMonthlyRuleEngine>(sp =>
 {
@@ -56,12 +68,18 @@ builder.Services.AddSingleton<IMonthlyRuleEngine>(sp =>
     var duongCongKy = new DuongCongKyRuleV2(
         sp.GetRequiredService<ILunarCalculatorService>(),
         sp.GetRequiredService<ICanChiCalculator>());
-    return new MonthlyRuleEngine(new ISpiritualRule[] { nguyetKy, tamNuong, xungTuoi, satChu, duongCongKy });
+    return new MonthlyRuleEngine([nguyetKy, tamNuong, xungTuoi, satChu, duongCongKy]);
 });
 
 // ── Feature handlers ──────────────────────────────────────────────────────────
 builder.Services.AddScoped<EvaluateActionHandler>();
 builder.Services.AddValidatorsFromAssemblyContaining<EvaluateActionValidator>();
+
+// ── Year / Month / Day tier handlers ─────────────────────────────────────────
+builder.Services.AddScoped<EvaluateActionWrapperHandler>();
+builder.Services.AddScoped<EvaluateActionYearHandler>();
+builder.Services.AddScoped<EvaluateActionMonthHandler>();
+builder.Services.AddScoped<EvaluateActionDayHandler>();
 
 // ── FindGoodDays services ───────────────────────────────────────────────────
 builder.Services.AddScoped<IDayScoreCalculator, DayScoreCalculator>();
@@ -117,7 +135,11 @@ builder.Services.AddScoped<ActionCodeMapper>();
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 builder.Services.AddProblemDetails();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -134,11 +156,14 @@ app.UseExceptionHandler();
 app.MapOpenApi();
 app.MapScalarApiReference();
 app.MapControllers();
-
-FindGoodDaysEndpoint.MapFindGoodDays(app);
 EvaluateActionEndpoint.Map(app);
 EvaluateActionDailyEndpoint.Map(app);
 ParseAndEvaluateEndpoint.Map(app);
+EvaluateSpiritualActionEndpoints.EvaluateActionYearEndpoint.Map(app);
+EvaluateSpiritualActionEndpoints.EvaluateActionMonthEndpoint.Map(app);
+EvaluateSpiritualActionEndpoints.EvaluateActionDayEndpoint.Map(app);
+
+FindGoodDaysEndpoint.MapFindGoodDays(app);
 
 // ── Client CRUD endpoints ────────────────────────────────────────────────────
 CreateClientEndpoint.Map(app);

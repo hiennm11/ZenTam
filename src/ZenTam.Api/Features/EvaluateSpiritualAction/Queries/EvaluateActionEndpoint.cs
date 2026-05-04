@@ -13,26 +13,33 @@ public static class EvaluateActionEndpoint
             EvaluateActionHandler          handler,
             CancellationToken              ct) =>
         {
-            // Validate
-            var validationResult = await validator.ValidateAsync(request, ct);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors
-                    .GroupBy(e => e.PropertyName)
-                    .ToDictionary(
-                        g => g.Key,
-                        g => g.Select(e => e.ErrorMessage).ToArray());
-                return Results.Problem(
-                    title: "Validation Failed",
-                    statusCode: 400,
-                    extensions: new Dictionary<string, object?> { ["errors"] = errors });
-            }
-
-            // Handle
             try
             {
+                // Validate
+                var validationResult = await validator.ValidateAsync(request, ct);
+                if (!validationResult.IsValid)
+                {
+                    var errors = validationResult.Errors
+                        .GroupBy(e => e.PropertyName)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.ErrorMessage).ToArray());
+                    return Results.Problem(
+                        title: "Validation Failed",
+                        statusCode: 400,
+                        extensions: new Dictionary<string, object?> { ["errors"] = errors });
+                }
+
+                // Handle
                 var response = await handler.HandleAsync(request, ct);
                 return Results.Ok(response);
+            }
+            catch (BadHttpRequestException ex)
+            {
+                return Results.Problem(
+                    title: "Bad Request",
+                    detail: ex.Message,
+                    statusCode: 400);
             }
             catch (NotFoundException ex)
             {
@@ -40,6 +47,13 @@ public static class EvaluateActionEndpoint
                     title: "Not Found",
                     detail: ex.Message,
                     statusCode: 404);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(
+                    title: "Internal Server Error",
+                    detail: ex.Message,
+                    statusCode: 500);
             }
         })
         .WithName("EvaluateSpiritualAction")

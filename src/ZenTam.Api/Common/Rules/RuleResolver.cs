@@ -23,7 +23,7 @@ public class RuleResolver
         var targetScope = gender == Gender.Male ? GenderApplyScope.MaleOnly : GenderApplyScope.FemaleOnly;
         return mappings
             .Where(m => m.GenderScope == GenderApplyScope.Both || m.GenderScope == targetScope)
-            .Where(m => m.Tier == RuleTier.All || m.Tier == tier)
+            .Where(m => m.Tier == RuleTier.Year || m.Tier == tier)
             .Select(m =>
             {
                 var rule = _registry.GetValueOrDefault(m.RuleCode);

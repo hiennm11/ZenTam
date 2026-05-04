@@ -10,6 +10,7 @@ public class EvaluateActionDailyValidator : AbstractValidator<EvaluateActionDail
     public EvaluateActionDailyValidator()
     {
         RuleFor(x => x.UserId)
+            .NotNull().WithMessage("UserId is required")
             .NotEmpty().WithMessage("UserId is required");
 
         RuleFor(x => x.ActionCode)

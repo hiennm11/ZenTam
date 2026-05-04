@@ -19,6 +19,7 @@ public class CreateClientHandler
         {
             Id = Guid.NewGuid(),
             Name = request.Name,
+            Username = request.Username,
             PhoneNumber = request.PhoneNumber,
             SolarDob = request.SolarDob,
             Gender = request.Gender!.Value,
@@ -33,6 +34,7 @@ public class CreateClientHandler
         {
             Id = client.Id,
             Name = client.Name,
+            Username = client.Username,
             PhoneNumber = client.PhoneNumber,
             SolarDob = client.SolarDob,
             Gender = client.Gender,

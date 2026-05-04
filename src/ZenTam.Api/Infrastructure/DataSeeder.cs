@@ -14,10 +14,12 @@ public static class DataSeeder
     /// </summary>
     public static async Task SeedAsync(ZenTamDbContext db)
     {
-        // 1. TẠO TEST CLIENT PROFILE "HIEN" VỚI 6 RELATED PERSONS
-        if (!db.ClientProfiles.Any())
+        try
         {
-            var hienId = new Guid("3c7be808-02c1-4f24-85e1-26f0f2455675");
+            // 1. TẠO TEST CLIENT PROFILE "HIEN" VỚI 6 RELATED PERSONS
+            if (!db.ClientProfiles.Any())
+            {
+                var hienId = new Guid("3c7be808-02c1-4f24-85e1-26f0f2455675");
             var hien = new ClientProfile
             {
                 Id = hienId,
@@ -233,6 +235,12 @@ public static class DataSeeder
             );
         }
 
-        await db.SaveChangesAsync();
+            await db.SaveChangesAsync();
+        }
+        catch (ArgumentException ex) when (ex.Message.Contains("already been added"))
+        {
+            // Database already seeded with this data - skip silently
+            Console.WriteLine("Database already seeded, skipping...");
+        }
     }
 }

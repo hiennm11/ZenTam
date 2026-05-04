@@ -8,7 +8,7 @@ public class EvaluateActionDailyRequest
     /// <summary>
     /// The user's profile ID.
     /// </summary>
-    public Guid UserId { get; init; }
+    public Guid? UserId { get; init; }
 
     /// <summary>
     /// The action code to evaluate (e.g., "XAY_NHA", "MAU_TOC").

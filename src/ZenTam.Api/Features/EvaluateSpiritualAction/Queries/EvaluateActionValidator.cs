@@ -7,6 +7,7 @@ public class EvaluateActionValidator : AbstractValidator<EvaluateActionRequest>
     public EvaluateActionValidator()
     {
         RuleFor(x => x.UserId)
+            .NotNull().WithMessage("UserId is required.")
             .NotEmpty().WithMessage("UserId is required.");
 
         RuleFor(x => x.ActionCode)
