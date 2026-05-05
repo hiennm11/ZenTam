@@ -1,6 +1,4 @@
 using ZenTam.Api.Common.CanChi.Models;
-using ZenTam.Api.Features.Calendars.Data;
-using ZenTam.Api.Features.Calendars.Services;
 
 namespace ZenTam.Api.Common.CanChi;
 
@@ -8,9 +6,7 @@ namespace ZenTam.Api.Common.CanChi;
 /// Can Chi (Stem-Branch) Calculator implementation.
 /// Stateless, thread-safe, singleton-ready.
 /// </summary>
-public class CanChiCalculator(
-    ZenTam.Api.Common.Lunar.ILunarCalculatorService lunarCalculator,
-    ISolarTermCalculator solarTermCalculator) : ICanChiCalculator
+public class CanChiCalculator : ICanChiCalculator
 {
     // 10 Heavenly Stems
     private static readonly string[] Cans =
@@ -154,47 +150,19 @@ public class CanChiCalculator(
     }
 
     /// <inheritdoc />
-    public int GetThapNhiTruc(DateTime solarDate)
-    {
-        ArgumentNullException.ThrowIfNull(solarDate);
-        
-        int jdn = GetJulianDayNumber(solarDate);
-        var canChiNgay = GetCanChiNgay(jdn);
-        
-        // Find Chi index (0=Tý, 1=Sửu, ..., 11=Hợi)
-        int chiIndex = Array.IndexOf(Chis, canChiNgay.Chi);
-        
-        // Get solar month from ISolarTermCalculator
-        int solarMonth = solarTermCalculator.GetSolarMonth(solarDate);
-        
-        return ThapNhiTrucLookup.GetTrucIndex(chiIndex, solarMonth);
-    }
-
-    /// <inheritdoc />
-    public string GetTrucName(int index)
-    {
-        return ThapNhiTrucLookup.GetTrucName(index);
-    }
-
-    /// <inheritdoc />
     public int GetNhiThapBatTu(int jdn)
     {
         return jdn % NhiThapBatTuCycleLength;
     }
 
     /// <inheritdoc />
-    public int GetJulianDayNumber(DateTime solarDate)
+    public int GetJulianDayNumber(int year, int month, int day)
     {
-        return lunarCalculator.GetJulianDayNumber(solarDate.Year, solarDate.Month, solarDate.Day);
-    }
-
-    /// <inheritdoc />
-    public ZenTam.Api.Features.Calendars.Models.HoangDaoInfo GetHoangDao(DateTime solarDate)
-    {
-        int jdn = GetJulianDayNumber(solarDate);
-        var canChi = GetCanChiNgay(jdn);
-        int canIndex = Array.IndexOf(Cans, canChi.Can);
-        int chiIndex = Array.IndexOf(Chis, canChi.Chi);
-        return ZenTam.Api.Features.Calendars.Data.HoangDaoLookup.GetHoangDao(canIndex, chiIndex);
+        // Simplified JDN calculation
+        // Reference: https://quasar astronomy.info/astronomy/jd.html
+        int a = (14 - month) / 12;
+        int y = year + 4800 - a;
+        int m = month + 12 * a - 3;
+        return day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
     }
 }
