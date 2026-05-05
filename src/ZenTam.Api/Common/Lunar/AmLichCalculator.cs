@@ -174,6 +174,91 @@ public class AmLichCalculator : ILunarCalculatorService
         return (lunarDay, lunarMonth, lunarYear, lunarLeap);
     }
 
+    /// <summary>
+    /// Converts a lunar date to its solar equivalent.
+    /// Uses binary search with linear fallback.
+    /// </summary>
+    private static DateTime Lunar2Solar(int lunarDay, int lunarMonth, int lunarYear, bool isLeapMonth)
+    {
+        // Estimate: search year is the lunar year
+        int searchYear = lunarYear;
+
+        // Set search bounds: Jan 21 to Feb 28
+        DateTime low = new DateTime(searchYear, 1, 21);
+        DateTime high = new DateTime(searchYear, 2, 28);
+
+        // If low > high (Feb 28 < Jan 21, shouldn't happen but safety check), use previous year
+        if (low > high)
+        {
+            searchYear--;
+            low = new DateTime(searchYear, 1, 21);
+            high = new DateTime(searchYear, 2, 28);
+        }
+
+        // Binary search
+        while (low <= high)
+        {
+            DateTime mid = low.AddDays((high - low).Days / 2);
+            int m = mid.Month;
+            int d = mid.Day;
+
+            var (resultLunarDay, resultLunarMonth, resultLunarYear, resultIsLeap) = Solar2Lunar(mid);
+
+            // Compare
+            if (resultLunarYear < lunarYear)
+            {
+                low = mid.AddDays(1);
+            }
+            else if (resultLunarYear > lunarYear)
+            {
+                high = mid.AddDays(-1);
+            }
+            else if (resultLunarMonth < lunarMonth)
+            {
+                low = mid.AddDays(1);
+            }
+            else if (resultLunarMonth > lunarMonth)
+            {
+                high = mid.AddDays(-1);
+            }
+            else if (resultLunarDay < lunarDay)
+            {
+                low = mid.AddDays(1);
+            }
+            else if (resultLunarDay > lunarDay)
+            {
+                high = mid.AddDays(-1);
+            }
+            else if (resultIsLeap != isLeapMonth)
+            {
+                // Same date but wrong leap flag - search both sides
+                if (!isLeapMonth)
+                    low = mid.AddDays(1);
+                else
+                    high = mid.AddDays(-1);
+            }
+            else
+            {
+                // Match found
+                return mid;
+            }
+        }
+
+        // Fallback linear search
+        DateTime start = new DateTime(searchYear, 1, 21);
+        for (int offset = 0; offset < 60; offset++)
+        {
+            DateTime candidate = start.AddDays(offset);
+            var (rDay, rMonth, rYear, rLeap) = Solar2Lunar(candidate);
+            if (rDay == lunarDay && rMonth == lunarMonth && rYear == lunarYear && rLeap == isLeapMonth)
+            {
+                return candidate;
+            }
+        }
+
+        throw new InvalidOperationException($"Cannot find solar date for lunar {lunarYear}/{lunarMonth}/{lunarDay} (leap={isLeapMonth})");
+    }
+
     // ─── Astronomical helpers ────────────────────────────────────────────────────
 
     /// <summary>

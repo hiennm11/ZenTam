@@ -55,6 +55,12 @@ public class CanChiCalculator : ICanChiCalculator
         "Tinh Nhựt Mã", "Trương Nguyệt Lộc", "Dực Hỏa Xà", "Chẩn Thủy Dẫn"
     ];
 
+    // 12 Trực names in traditional order (index 0–11)
+    private static readonly string[] TrucNames =
+    [
+        "Kiến", "Trọc", "Hà", "Mão", "Thanh", "Tạ", "Sơn", "Tùy", "Mỵn", "Chu", "Tất", "Bình"
+    ];
+
     // Can-dependent month Can table (month 1 = index 0)
     // Row 0: Giáp (0), Row 1: Ất (1), ... Row 9: Quý (9)
     // Col 0=month1(Giáp), Col1=month2(Ất), ... Col11=month12(Quý)
@@ -156,13 +162,20 @@ public class CanChiCalculator : ICanChiCalculator
     }
 
     /// <inheritdoc />
+    public int GetTru(int jdn)
+    {
+        return (jdn + 3) % 12;
+    }
+
+    /// <inheritdoc />
     public int GetJulianDayNumber(int year, int month, int day)
     {
-        // Simplified JDN calculation
-        // Reference: https://quasar astronomy.info/astronomy/jd.html
-        int a = (14 - month) / 12;
-        int y = year + 4800 - a;
-        int m = month + 12 * a - 3;
-        return day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
+        int a  = (14 - month) / 12;
+        int yr = year + 4800 - a;
+        int mo = month + 12 * a - 3;
+        int jd = day + (153 * mo + 2) / 5 + 365 * yr + yr / 4 - yr / 100 + yr / 400 - 32045;
+        if (jd < 2299161)
+            jd = day + (153 * mo + 2) / 5 + 365 * yr + yr / 4 - 32083;
+        return jd;
     }
 }

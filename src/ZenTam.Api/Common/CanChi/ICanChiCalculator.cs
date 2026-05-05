@@ -43,4 +43,10 @@ public interface ICanChiCalculator
     /// Formula: jdn % 28 → index 0–27
     /// </summary>
     int GetNhiThapBatTu(int jdn);
+
+    /// <summary>
+    /// Trực (0–11) daily cycle.
+    /// Formula: (jdn + 3) % 12
+    /// </summary>
+    int GetTru(int jdn);
 }
